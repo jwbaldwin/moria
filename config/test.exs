@@ -30,4 +30,4 @@ config :logger, level: :warn
 config :phoenix, :plug_init_mode, :runtime
 
 # Oban configuration (disable running oban jobs)
-config :kept, Oban, testing: :inline
+config :moria, Oban, testing: :inline

@@ -18,8 +18,8 @@ config :moria, MoriaWeb.Endpoint,
   live_view: [signing_salt: "tlg8TYXh"]
 
 # Oban configuration
-config :kept, Oban,
-  repo: Kept.Repo,
+config :moria, Oban,
+  repo: Moria.Repo,
   plugins: [{Oban.Plugins.Pruner, max_age: 300}],
   queues: [default: 10]
 
