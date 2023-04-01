@@ -48,7 +48,7 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("PHX_HOST") || "api.gokept.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :moria, MoriaWeb.Endpoint,
@@ -80,4 +80,10 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  # Configure CORS
+  config :cors_plug,
+    origin: ["https://gokept.com", "https://app.gokept.com"],
+    max_age: 86400,
+    methods: ["POST"]
 end
