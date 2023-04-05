@@ -7,7 +7,7 @@ defmodule Moria.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: [] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -47,7 +47,8 @@ defmodule Moria.MixProject do
       {:oban, "~> 2.14"},
       {:nimble_csv, "~> 1.2"},
       {:credo, "~> 1.7"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:finch, "~> 0.15.0"}
     ]
   end
 

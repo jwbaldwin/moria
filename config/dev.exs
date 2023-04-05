@@ -65,3 +65,7 @@ config :cors_plug,
   origin: ["http://localhost:3000"],
   max_age: 86400,
   methods: ["POST"]
+
+config :shopify,
+  client_id: "49fbbd08e68af0b8308043fc54fe99c2",
+  client_secret: "8dd5256b1e4803ea955a83914158f86a"

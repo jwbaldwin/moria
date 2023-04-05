@@ -7,6 +7,8 @@ defmodule MoriaWeb.Router do
 
   scope "/api", MoriaWeb do
     pipe_through :api
+
+    get "/auth", IntegrationsController, :verify
   end
 
   # Enables LiveDashboard only for development
