@@ -68,4 +68,5 @@ config :cors_plug,
 
 config :shopify,
   client_id: "49fbbd08e68af0b8308043fc54fe99c2",
-  client_secret: "8dd5256b1e4803ea955a83914158f86a"
+  client_secret: "8dd5256b1e4803ea955a83914158f86a",
+  scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_products"

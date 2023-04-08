@@ -3,6 +3,8 @@ defmodule MoriaWeb.IntegrationsController do
   Controller that verifies integration OAuth requests
   """
   use MoriaWeb, :controller
+  @shopify_client_id Application.compile_env(:shopify, :client_id)
+  @shopify_scopes Application.compile_env(:shopify, :scopes)
 
   def verify(conn, %{"hmac" => provided_hmac_binary, "shop" => shop} = params) do
     hmac_key = Application.get_env(:shopify, :client_secret)
@@ -35,14 +37,12 @@ defmodule MoriaWeb.IntegrationsController do
   end
 
   defp build_redirect_url(shop) do
-    client_id = Application.get_env(:shopify, :client_id)
-    scopes = "read_customers,read_reports,read_inventory,read_all_orders,read_products"
     # this needs to be more variable
     redirect_uri = "https://e552-138-88-63-219.ngrok.io/integrations"
-    # how does this work exactly? we need to verify this same value again?
-    nonce = :crypto.strong_rand_bytes(16)
-    access_mode = "per-user"
 
-    "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{client_id}&scope=#{scopes}&redirect_uri=#{redirect_uri}&state=#{nonce}&grant_options[]=#{access_mode}"
+    # 3xx redirect to the URL. During the redirect, set a signed cookie with the nonce value from the URL.
+    nonce = :crypto.strong_rand_bytes(16)
+
+    "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{@shopify_client_id}&scope=#{@shopify_scopes}&redirect_uri=#{redirect_uri}&state=#{nonce}&grant_options[]=per-user"
   end
 end
