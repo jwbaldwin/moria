@@ -23,6 +23,8 @@ config :moria, Oban,
   plugins: [{Oban.Plugins.Pruner, max_age: 300}],
   queues: [default: 10]
 
+# Tesla configuration
+config :tesla, adapter: {Tesla.Adapter.Finch, name: APIClient}
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

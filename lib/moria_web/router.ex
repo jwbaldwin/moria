@@ -8,7 +8,7 @@ defmodule MoriaWeb.Router do
   scope "/api", MoriaWeb do
     pipe_through :api
 
-    get "/auth", IntegrationsController, :verify
+    post "/oauth/shopify", IntegrationsController, :shopify
   end
 
   # Enables LiveDashboard only for development

@@ -48,7 +48,9 @@ defmodule Moria.MixProject do
       {:nimble_csv, "~> 1.2"},
       {:credo, "~> 1.7"},
       {:cors_plug, "~> 3.0"},
-      {:finch, "~> 0.15.0"}
+      {:req, "~> 0.3"},
+      {:tesla, "~> 1.6"},
+      {:finch, "~> 0.16"}
     ]
   end
 

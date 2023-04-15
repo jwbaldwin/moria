@@ -18,7 +18,8 @@ defmodule Moria.Application do
       MoriaWeb.Endpoint,
       # Start a worker by calling: Moria.Worker.start_link(arg)
       # {Moria.Worker, arg}
-      {Oban, Application.fetch_env!(:moria, Oban)}
+      {Oban, Application.fetch_env!(:moria, Oban)},
+      {Finch, name: APIClient}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

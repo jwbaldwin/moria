@@ -3,46 +3,47 @@ defmodule MoriaWeb.IntegrationsController do
   Controller that verifies integration OAuth requests
   """
   use MoriaWeb, :controller
-  @shopify_client_id Application.compile_env(:shopify, :client_id)
-  @shopify_scopes Application.compile_env(:shopify, :scopes)
 
-  def verify(conn, %{"hmac" => provided_hmac_binary, "shop" => shop} = params) do
-    hmac_key = Application.get_env(:shopify, :client_secret)
+  require Logger
 
-    query_params = Map.delete(params, "hmac")
+  alias Moria.Integrations
 
-    # Sort the query parameters alphabetically by key
-    query_params =
-      query_params
-      |> Map.to_list()
-      |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
-      |> Enum.join("&")
+  action_fallback MoriaWeb.FallbackController
 
-    # Generate the expected hmac
-    generated_hmac_binary =
-      :hmac
-      |> :crypto.mac(:sha256, hmac_key, query_params)
-      |> Base.encode16()
+  def shopify(conn, params) do
+    %{"auth_token_url" => auth_token_url, "scopes" => scopes, "shop" => shop} = params
 
-    # Compare the provided hmac to the generated hmac
-    is_request_valid? = provided_hmac_binary == generated_hmac_binary
+    json_data =
+      params
+      |> Map.delete("auth_token_url")
+      |> Map.delete("scopes")
+      |> Map.delete("shop")
 
-    if is_request_valid? do
-      redirect(conn, external: build_redirect_url(shop))
-    else
+    with {:ok, %Req.Response{status: 200, body: body}} <-
+           Req.post(auth_token_url, json: json_data),
+         true <- verify_scopes(body, scopes),
+         integration_params <- build_integration_params(body, shop),
+         {:ok, _} <- Integrations.upsert_integration(integration_params) do
       conn
-      |> put_status(:bad_request)
-      |> json(%{message: "Request is not valid."})
+      |> put_status(:created)
+      |> json(%{shop: shop})
+    else
+      {:ok, response} ->
+        Logger.warn(response.body)
+        {:error, :unauthorized}
     end
   end
 
-  defp build_redirect_url(shop) do
-    # this needs to be more variable
-    redirect_uri = "https://e552-138-88-63-219.ngrok.io/integrations"
+  defp verify_scopes(%{"scope" => returned_scopes}, requested_scopes) do
+    Enum.sort(String.split(returned_scopes, ",")) ==
+      Enum.sort(String.split(requested_scopes, ","))
+  end
 
-    # 3xx redirect to the URL. During the redirect, set a signed cookie with the nonce value from the URL.
-    nonce = :crypto.strong_rand_bytes(16)
-
-    "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{@shopify_client_id}&scope=#{@shopify_scopes}&redirect_uri=#{redirect_uri}&state=#{nonce}&grant_options[]=per-user"
+  defp build_integration_params(%{"access_token" => access_token}, shop) do
+    %{
+      shop: shop,
+      access_token: access_token,
+      type: :shopify
+    }
   end
 end
