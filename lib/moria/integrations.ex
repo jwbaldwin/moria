@@ -7,6 +7,9 @@ defmodule Moria.Integrations do
   alias Moria.Repo
 
   alias Moria.Integrations.Integration
+  alias Moria.Integrations.ShopifyCustomer
+  alias Moria.Integrations.ShopifyOrder
+  alias Moria.Integrations.ShopifyProduct
 
   @doc """
   Returns the list of integrations.
@@ -25,17 +28,17 @@ defmodule Moria.Integrations do
   Gets a single integration.
 
   Raises `Ecto.NoResultsError` if the Integration does not exist.
-
-  ## Examples
-
-      iex> get_integration!(123)
-      %Integration{}
-
-      iex> get_integration!(456)
-      ** (Ecto.NoResultsError)
-
   """
   def get_integration!(id), do: Repo.get!(Integration, id)
+
+  @doc """
+  Gets a single integration by the shop name
+  """
+  def get_by_shop(shop) do
+    Integration
+    |> Repo.get_by(shop: shop)
+    |> Repo.normalize_one_result()
+  end
 
   @doc """
   Creates a integration.
@@ -98,6 +101,9 @@ defmodule Moria.Integrations do
     Repo.delete(integration)
   end
 
+  def delete_shopify_data(%Integration{} = integration) do
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking integration changes.
 
@@ -109,5 +115,104 @@ defmodule Moria.Integrations do
   """
   def change_integration(%Integration{} = integration, attrs \\ %{}) do
     Integration.changeset(integration, attrs)
+  end
+
+  @spec bulk_insert_resource(
+          ShopifyCustomer.t() | ShopifyOrder.t() | ShopifyProduct.t(),
+          List.t(),
+          integer()
+        ) :: :ok
+  def bulk_insert_resource(resource_type, list_of_resources, integration_id) do
+    batch_size = get_batch_size(list_of_resources)
+
+    list_of_resources
+    |> Enum.map(fn resource -> build_shopify_resource(resource_type, resource, integration_id) end)
+    |> Enum.chunk_every(batch_size)
+    |> Task.async_stream(fn chunk_of_resources ->
+      Moria.Repo.insert_all(resource_type, chunk_of_resources,
+        on_conflict: {:replace_all_except, [:shopify_id]},
+        conflict_target: [:shopify_id]
+      )
+    end)
+    |> Enum.to_list()
+    |> case do
+      [ok: _] -> :ok
+      error -> {:error, error}
+    end
+  end
+
+  defp get_batch_size([resource | _rest]) do
+    div(65_535, length(Map.keys(resource)))
+  end
+
+  defp build_shopify_resource(ShopifyProduct, product, integration_id) do
+    now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+    %{
+      shopify_id: product["id"],
+      shopify_created_at: iso8601(product["created_at"]),
+      shopify_updated_at: iso8601(product["updated_at"]),
+      title: product["title"],
+      status: product["status"],
+      body_html: product["body_html"],
+      handle: product["handle"],
+      options: product["options"],
+      product_type: product["product_type"],
+      published_at: iso8601(product["published_at"]),
+      vendor: product["vendor"],
+      integration_id: integration_id,
+      inserted_at: now,
+      updated_at: now
+    }
+  end
+
+  defp build_shopify_resource(ShopifyCustomer, customer, integration_id) do
+    now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+    %{
+      shopify_id: customer["id"],
+      shopify_created_at: iso8601(customer["created_at"]),
+      shopify_updated_at: iso8601(customer["updated_at"]),
+      first_name: customer["first_name"],
+      last_name: customer["last_name"],
+      email: customer["email"],
+      email_marketing_consent: customer["email_marketing_consent"],
+      verified_email: customer["verified_email"],
+      phone: customer["phone"],
+      sms_marketing_consent: customer["sms_marketing_consent"],
+      total_spent: customer["total_spent"],
+      integration_id: integration_id,
+      inserted_at: now,
+      updated_at: now
+    }
+  end
+
+  defp build_shopify_resource(ShopifyOrder, order, integration_id) do
+    now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+    %{
+      shopify_id: order["id"],
+      shopify_created_at: iso8601(order["created_at"]),
+      shopify_updated_at: iso8601(order["updated_at"]),
+      customer: order["customer"],
+      email: order["email"],
+      line_items: order["line_items"],
+      name: order["name"],
+      number: order["number"],
+      order_number: order["order_number"],
+      processed_at: iso8601(order["processed_at"]),
+      source_url: order["source_url"],
+      total_price: order["total_price"],
+      integration_id: integration_id,
+      inserted_at: now,
+      updated_at: now
+    }
+  end
+
+  defp iso8601(nil), do: nil
+
+  defp iso8601(datetime) do
+    {:ok, datetime, _} = DateTime.from_iso8601(datetime)
+    datetime
   end
 end

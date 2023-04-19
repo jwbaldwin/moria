@@ -44,7 +44,7 @@ defmodule Moria.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:oban, "~> 2.14"},
+      {:oban, "~> 2.15"},
       {:nimble_csv, "~> 1.2"},
       {:credo, "~> 1.7"},
       {:cors_plug, "~> 3.0"},
