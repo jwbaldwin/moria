@@ -3,12 +3,25 @@ defmodule MoriaWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug MoriaWeb.Auth.AuthPlug, otp_app: :moria
+  end
+
+  pipeline :api_protected do
+    plug Pow.Plug.RequireAuthenticated, error_handler: MoriaWeb.Auth.ErrorHandler
   end
 
   scope "/api", MoriaWeb do
     pipe_through :api
 
     post "/oauth/shopify", IntegrationsController, :shopify
+
+    resources "/registration", RegistrationController, singleton: true, only: [:create]
+    resources "/session", SessionController, singleton: true, only: [:create, :delete]
+    post "/session/renew", SessionController, :renew
+  end
+
+  scope "/api", MoriaWeb do
+    pipe_through [:api, :api_protected]
   end
 
   # Enables LiveDashboard only for development
