@@ -10,6 +10,19 @@ defmodule Moria.Integrations.ShopifyOrder do
 
   alias Moria.Integrations.Integration
 
+  @derive {Jason.Encoder,
+           only: [
+             :shopify_id,
+             :shopify_created_at,
+             :shopify_updated_at,
+             :email,
+             :line_items,
+             :customer,
+             :order_number,
+             :processed_at,
+             :total_price
+           ]}
+
   schema "shopify_orders" do
     field :shopify_id, :integer
     field :shopify_created_at, :utc_datetime

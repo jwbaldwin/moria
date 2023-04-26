@@ -85,7 +85,7 @@ if config_env() == :prod do
   config :cors_plug,
     origin: ["https://gokept.com", "https://app.gokept.com"],
     max_age: 86400,
-    methods: ["POST"]
+    methods: ["*"]
 
   config :shopify,
     client_id: "49fbbd08e68af0b8308043fc54fe99c2",

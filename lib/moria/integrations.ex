@@ -41,6 +41,15 @@ defmodule Moria.Integrations do
   end
 
   @doc """
+  Gets a single integration by user id
+  """
+  def get_by_user(user) do
+    Integration
+    |> Repo.get_by(user_id: user.id)
+    |> Repo.normalize_one_result()
+  end
+
+  @doc """
   Creates a integration.
 
   ## Examples
@@ -102,6 +111,8 @@ defmodule Moria.Integrations do
   end
 
   def delete_shopify_data(%Integration{} = integration) do
+    IO.inspect(integration)
+    # TODO: delte all integration records in a multi
   end
 
   @doc """
@@ -214,5 +225,26 @@ defmodule Moria.Integrations do
   defp iso8601(datetime) do
     {:ok, datetime, _} = DateTime.from_iso8601(datetime)
     datetime
+  end
+
+  def list_all_orders(integration_id) do
+    from(orders in ShopifyOrder,
+      where: orders.integration_id == ^integration_id
+    )
+    |> Repo.all()
+  end
+
+  def list_all_products(integration_id) do
+    from(products in ShopifyProduct,
+      where: products.integration_id == ^integration_id
+    )
+    |> Repo.all()
+  end
+
+  def list_all_customers(integration_id) do
+    from(customer in ShopifyCustomer,
+      where: customer.integration_id == ^integration_id
+    )
+    |> Repo.all()
   end
 end

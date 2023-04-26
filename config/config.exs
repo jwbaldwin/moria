@@ -48,7 +48,7 @@ config :phoenix, :json_library, Jason
 config :moria, :pow,
   user: Moria.Users.User,
   repo: Moria.Repo,
-  extensions: [PowResetPassword, PowEmailConfirmation],
+  extensions: [PowResetPassword, PowEmailConfirmation, PowPersistentSession],
   controller_callbacks: Pow.Extension.Phoenix.ControllerCallbacks,
   mailer_backend: MoriaWeb.Emails.Mailer
 

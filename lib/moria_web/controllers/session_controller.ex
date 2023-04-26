@@ -12,6 +12,7 @@ defmodule MoriaWeb.SessionController do
       {:ok, conn} ->
         json(conn, %{
           data: %{
+            user: conn.assigns.current_user,
             access_token: conn.private.api_access_token,
             renewal_token: conn.private.api_renewal_token
           }

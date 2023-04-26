@@ -19,11 +19,15 @@ defmodule MoriaWeb.IntegrationsController do
       |> Map.delete("scopes")
       |> Map.delete("shop")
 
+    user_id = conn.assigns.current_user.id
+
     with {:ok, %Req.Response{status: 200, body: body}} <-
            Req.post(auth_token_url, json: json_data),
          true <- verify_scopes(body, scopes),
-         integration_params <- build_integration_params(body, shop),
-         {:ok, _} <- Integrations.upsert_integration(integration_params) do
+         integration_params <- build_integration_params(user_id, body, shop),
+         {:ok, integration} <- Integrations.upsert_integration(integration_params) do
+      Moria.EnqueueShopifySyncWorkers.call(integration)
+
       conn
       |> put_status(:created)
       |> json(%{shop: shop})
@@ -39,11 +43,12 @@ defmodule MoriaWeb.IntegrationsController do
       Enum.sort(String.split(requested_scopes, ","))
   end
 
-  defp build_integration_params(%{"access_token" => access_token}, shop) do
+  defp build_integration_params(user_id, %{"access_token" => access_token}, shop) do
     %{
       shop: shop,
       access_token: access_token,
-      type: :shopify
+      type: :shopify,
+      user_id: user_id
     }
   end
 end

@@ -4,7 +4,11 @@ defmodule Moria.Users.User do
   use Ecto.Schema
 
   use Pow.Extension.Ecto.Schema,
-    extensions: [PowResetPassword, PowEmailConfirmation]
+    extensions: [PowResetPassword, PowEmailConfirmation, PowPersistentSession]
+
+  alias Moria.Integrations.Integration
+
+  @derive {Jason.Encoder, only: [:name, :email, :id]}
 
   schema "users" do
     pow_user_fields()
@@ -14,6 +18,7 @@ defmodule Moria.Users.User do
     # :password (virtual)
 
     field :name, :string
+    has_one :integration, Integration
 
     timestamps()
   end

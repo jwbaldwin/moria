@@ -13,8 +13,6 @@ defmodule MoriaWeb.Router do
   scope "/api", MoriaWeb do
     pipe_through :api
 
-    post "/oauth/shopify", IntegrationsController, :shopify
-
     resources "/registration", RegistrationController, singleton: true, only: [:create]
     resources "/session", SessionController, singleton: true, only: [:create, :delete]
     post "/session/renew", SessionController, :renew
@@ -22,6 +20,12 @@ defmodule MoriaWeb.Router do
 
   scope "/api", MoriaWeb do
     pipe_through [:api, :api_protected]
+
+    post "/oauth/shopify", IntegrationsController, :shopify
+
+    get "/insights/orders", InsightsController, :orders
+    get "/insights/products", InsightsController, :products
+    get "/insights/customers", InsightsController, :customers
   end
 
   # Enables LiveDashboard only for development
