@@ -24,6 +24,8 @@ defmodule Moria.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Moria.DataCase
+
+      use ExMachina.Ecto, repo: Moria.Repo
     end
   end
 

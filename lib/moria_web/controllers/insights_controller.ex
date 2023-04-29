@@ -1,13 +1,21 @@
 defmodule MoriaWeb.InsightsController do
   use MoriaWeb, :controller
+  use MoriaWeb.CurrentUser
 
   require Logger
 
   alias Moria.Integrations
+  alias Moria.Insights.Handlers.Brief
 
   action_fallback MoriaWeb.FallbackController
 
-  def orders(%{assigns: %{current_user: user}} = conn, _params) do
+  def weekly_brief(conn, _params, user) do
+    with {:ok, brief} <- Brief.weekly_brief(user) do
+      json(conn, %{total: brief})
+    end
+  end
+
+  def orders(conn, _params, user) do
     Logger.info("Fetching orders")
 
     with {:ok, integration} <- Integrations.get_by_user(user),
@@ -16,7 +24,7 @@ defmodule MoriaWeb.InsightsController do
     end
   end
 
-  def products(%{assigns: %{current_user: user}} = conn, _params) do
+  def products(conn, _params, user) do
     Logger.info("Fetching products")
 
     with {:ok, integration} <- Integrations.get_by_user(user),
@@ -25,7 +33,7 @@ defmodule MoriaWeb.InsightsController do
     end
   end
 
-  def customers(%{assigns: %{current_user: user}} = conn, _params) do
+  def customers(conn, _params, user) do
     Logger.info("Fetching customers")
 
     with {:ok, integration} <- Integrations.get_by_user(user),

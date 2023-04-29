@@ -205,7 +205,7 @@ defmodule Moria.Integrations do
       shopify_id: order["id"],
       shopify_created_at: iso8601(order["created_at"]),
       shopify_updated_at: iso8601(order["updated_at"]),
-      customer: order["customer"],
+      shopify_customer_id: order["customer"]["id"],
       email: order["email"],
       line_items: order["line_items"],
       name: order["name"],

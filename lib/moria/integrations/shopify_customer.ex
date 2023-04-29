@@ -9,6 +9,7 @@ defmodule Moria.Integrations.ShopifyCustomer do
   import Ecto.Changeset
 
   alias Moria.Integrations.Integration
+  alias Moria.Integrations.ShopifyOrder
 
   @derive {Jason.Encoder,
            only: [
@@ -35,9 +36,13 @@ defmodule Moria.Integrations.ShopifyCustomer do
     field :verified_email, :boolean
     field :phone, :string
     field :sms_marketing_consent, :map
-    field :total_spent, :string
+    field :total_spent, :decimal
 
     belongs_to :integration, Integration
+
+    has_many :shopify_orders, ShopifyOrder,
+      references: :shopify_id,
+      foreign_key: :shopify_customer_id
 
     timestamps()
   end

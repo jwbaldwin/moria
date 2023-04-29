@@ -15,7 +15,6 @@ defmodule Moria.EnqueueShopifySyncWorkers do
     params = %{shop: integration.shop}
 
     [
-      ShopifyOrdersSyncWorker.new(params),
       ShopifyProductsSyncWorker.new(params),
       ShopifyCustomersSyncWorker.new(params)
     ]

@@ -51,7 +51,9 @@ defmodule Moria.MixProject do
       {:cors_plug, "~> 3.0"},
       {:req, "~> 0.3"},
       {:tesla, "~> 1.6"},
-      {:finch, "~> 0.16"}
+      {:finch, "~> 0.16"},
+      {:timex, "~> 3.7.11"},
+      {:ex_machina, "~> 2.7.0"}
     ]
   end
 

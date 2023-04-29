@@ -23,6 +23,7 @@ defmodule MoriaWeb.Router do
 
     post "/oauth/shopify", IntegrationsController, :shopify
 
+    get "/insights/weekly-brief", InsightsController, :weekly_brief
     get "/insights/orders", InsightsController, :orders
     get "/insights/products", InsightsController, :products
     get "/insights/customers", InsightsController, :customers
