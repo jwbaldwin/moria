@@ -7,6 +7,7 @@ defmodule Moria.Integrations.Integration do
   alias Moria.Integrations.ShopifyOrder
   alias Moria.Integrations.ShopifyCustomer
 
+  @derive {Jason.Encoder, only: [:type, :shop]}
   schema "integrations" do
     field :type, Ecto.Enum, values: [:shopify]
     field :access_token, :string

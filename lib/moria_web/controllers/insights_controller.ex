@@ -11,7 +11,7 @@ defmodule MoriaWeb.InsightsController do
 
   def weekly_brief(conn, _params, user) do
     with {:ok, brief} <- Brief.weekly_brief(user) do
-      json(conn, %{total: brief})
+      json(conn, %{brief: brief})
     end
   end
 

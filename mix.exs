@@ -53,7 +53,8 @@ defmodule Moria.MixProject do
       {:tesla, "~> 1.6"},
       {:finch, "~> 0.16"},
       {:timex, "~> 3.7.11"},
-      {:ex_machina, "~> 2.7.0"}
+      {:ex_machina, "~> 2.7.0", only: :test},
+      {:decimal, "~> 2.1.1"}
     ]
   end
 

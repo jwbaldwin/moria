@@ -21,6 +21,7 @@ defmodule MoriaWeb.Router do
   scope "/api", MoriaWeb do
     pipe_through [:api, :api_protected]
 
+    get "/integrations", IntegrationsController, :index
     post "/oauth/shopify", IntegrationsController, :shopify
 
     get "/insights/weekly-brief", InsightsController, :weekly_brief

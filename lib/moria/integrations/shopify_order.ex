@@ -64,9 +64,9 @@ defmodule Moria.Integrations.ShopifyOrder do
   ]
 
   @doc false
-  def changeset(integration, attrs) do
-    integration
+  def changeset(order, attrs) do
+    order
     |> cast(attrs, @fields)
-    |> validate_required(@fields)
+    |> validate_required(:shopify_id)
   end
 end

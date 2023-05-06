@@ -24,7 +24,6 @@ defmodule Moria.Repo.Migrations.AddShopifyProductsOrdersCustomers do
       add :shopify_id, :bigint
       add :shopify_created_at, :utc_datetime
       add :shopify_updated_at, :utc_datetime
-      add :customer, :map
       add :email, :string
       add :line_items, {:array, :map}
       add :name, :string
@@ -32,7 +31,7 @@ defmodule Moria.Repo.Migrations.AddShopifyProductsOrdersCustomers do
       add :order_number, :integer
       add :processed_at, :utc_datetime
       add :source_url, :string
-      add :total_price, :string
+      add :total_price, :decimal
 
       add :integration_id, references(:integrations, on_delete: :delete_all), null: false
 
@@ -50,7 +49,7 @@ defmodule Moria.Repo.Migrations.AddShopifyProductsOrdersCustomers do
       add :verified_email, :boolean
       add :phone, :string
       add :sms_marketing_consent, :map
-      add :total_spent, :string
+      add :total_spent, :decimal
 
       add :integration_id, references(:integrations, on_delete: :delete_all), null: false
 

@@ -3,6 +3,7 @@ defmodule MoriaWeb.IntegrationsController do
   Controller that verifies integration OAuth requests
   """
   use MoriaWeb, :controller
+  use MoriaWeb.CurrentUser
 
   require Logger
 
@@ -10,7 +11,12 @@ defmodule MoriaWeb.IntegrationsController do
 
   action_fallback MoriaWeb.FallbackController
 
-  def shopify(conn, params) do
+  def index(conn, _params, current_user) do
+    integrations = Integrations.list_integrations(current_user)
+    json(conn, %{integrations: integrations})
+  end
+
+  def shopify(conn, params, _) do
     %{"auth_token_url" => auth_token_url, "scopes" => scopes, "shop" => shop} = params
 
     json_data =

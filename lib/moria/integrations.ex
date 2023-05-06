@@ -20,8 +20,10 @@ defmodule Moria.Integrations do
       [%Integration{}, ...]
 
   """
-  def list_integrations do
-    Repo.all(Integration)
+  def list_integrations(user) do
+    Integration
+    |> where(user_id: ^user.id)
+    |> Repo.all()
   end
 
   @doc """
@@ -29,7 +31,11 @@ defmodule Moria.Integrations do
 
   Raises `Ecto.NoResultsError` if the Integration does not exist.
   """
-  def get_integration!(id), do: Repo.get!(Integration, id)
+  def get_integration!(id) do
+    Integration
+    |> Repo.get!(id)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Gets a single integration by the shop name
@@ -111,8 +117,20 @@ defmodule Moria.Integrations do
   end
 
   def delete_shopify_data(%Integration{} = integration) do
-    IO.inspect(integration)
-    # TODO: delte all integration records in a multi
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete_all(
+      :delete_all_products,
+      from(sp in ShopifyProduct, where: sp.integration_id == ^integration.id)
+    )
+    |> Ecto.Multi.delete_all(
+      :delete_all_customers,
+      from(sc in ShopifyCustomer, where: sc.integration_id == ^integration.id)
+    )
+    |> Ecto.Multi.delete_all(
+      :delete_all_orders,
+      from(so in ShopifyOrder, where: so.integration_id == ^integration.id)
+    )
+    |> Repo.transaction()
   end
 
   @doc """
@@ -191,7 +209,7 @@ defmodule Moria.Integrations do
       verified_email: customer["verified_email"],
       phone: customer["phone"],
       sms_marketing_consent: customer["sms_marketing_consent"],
-      total_spent: customer["total_spent"],
+      total_spent: Decimal.new(customer["total_spent"]),
       integration_id: integration_id,
       inserted_at: now,
       updated_at: now
@@ -213,7 +231,7 @@ defmodule Moria.Integrations do
       order_number: order["order_number"],
       processed_at: iso8601(order["processed_at"]),
       source_url: order["source_url"],
-      total_price: order["total_price"],
+      total_price: Decimal.new(order["total_price"]),
       integration_id: integration_id,
       inserted_at: now,
       updated_at: now
