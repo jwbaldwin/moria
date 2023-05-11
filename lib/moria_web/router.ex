@@ -44,6 +44,7 @@ defmodule MoriaWeb.Router do
       pipe_through [:fetch_session, :protect_from_forgery]
 
       live_dashboard "/dashboard", metrics: MoriaWeb.Telemetry
+      forward "/gallery", MoriaWeb.Emails.Gallery
     end
   end
 

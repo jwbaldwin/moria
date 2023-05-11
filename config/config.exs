@@ -25,13 +25,9 @@ config :moria, Oban,
 
 # Tesla configuration
 config :tesla, adapter: {Tesla.Adapter.Finch, name: APIClient}
-# Configures the mailer
-#
+
 # By default it uses the "Local" adapter which stores the emails
 # locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
 config :moria, Moria.Mailer, adapter: Swoosh.Adapters.Local
 
 # Swoosh API client is needed for adapters other than SMTP.

@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Kept</title>
+    <style>
+      .container {
+          background-color: #FFFFFF;
+          padding: 60px 60px;
+          margin: 0 auto 30px;
+          max-width: 440px;
+          box-shadow: 5px 12px 36px rgba(0, 35, 75, 0.10);
+          border-radious: 10px;
+      }
+
+      .email-button {
+          border-radius: 100px;
+          background-color: #1a1c20;
+          color: #FFFFFF;
+          padding: 12px 24px;
+          font-size: 16pt;
+          text-decoration-line: none;
+          box-shadow: 5px 12px 36px rgba(0, 35, 75, 0.15);
+        }
+
+      @media (max-width: 500px) {
+          .container {
+              padding: 60px 30px !important;
+            }
+        }
+      
+      .body {
+          width: 100% !important;
+          height: 100% !important;
+          font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        }
+
+      .background {
+
+        }
+    </style>
+  </head>
+  <body style="background-color: #FFFFFF !important; padding: 0; margin: 0; height: 100%; width: 100%;" class="body">
+    <div style="background-color: #FFFFFF; font-size: 16px; line-height: 1.5; color: rgba(0, 35, 75, 0.6); overflow: hidden">
+      <div style="display: flex;">
+        <a href="https://app.gokept.com">
+         <!-- <img
+            class="logo-header"
+            src="https://kept-assets.s3.amazonaws.com/logo.png"
+            alt="Kept Logo"
+            width="135"
+            style="display: block; margin: 0 auto 48px;" /> -->
+        </a>
+        <a href="" style="color: #1a1c20; padding: 12px;">view on Kept</a>
+      </div>
+      <div class="container">
+        <%= @inner_content %>
+      </div>
+    </div>
+  </body>
+</html>
