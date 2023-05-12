@@ -2,18 +2,20 @@
   <div style="display: flex; justify-content: space-between; padding: 0 0 16px 0;">
     <div style="font-size: 30pt; font-weight: 800;">Your weekly brief</div>
   </div>
+  <div style="height: 2px; background-color: #1a1c20; width: 100%;"></div>
   <%= for {i, insight} <- @insights do %>
     <div style="display: flex; line-height: 1.75;">
       <div style="padding-right: 16px; font-size: 48pt; color: #1EDDB0; font-weight: 600;">
         <%= i %>
       </div>
-      <div style="font-size: 16pt; padding: 30px 0; line-height: 1.15;">
-        <%= insight %>
+      <div style="padding: 26px 0; line-height: 1.15;">
+        <p style="font-size: 16pt; margin: 4px 0;"><%= insight %></p>
+        <a class="link" style="margin: 8px 0 0 0;" href="<%= @brief_url%>">See details ></a>
       </div>
     </div>
   <% end %>
   <div style="display: flex; justify-content: center; padding: 16px 0;">
-    <a href="" class="email-button">View on Kept</a>
+    <a href="<%= @brief_url %>" class="email-button">View on Kept</a>
   </div>
     
 </div>

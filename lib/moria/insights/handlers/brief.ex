@@ -5,6 +5,7 @@ defmodule Moria.Insights.Handlers.Brief do
 
   import Ecto.Query
 
+  alias Moria.Insights.Brief
   alias Moria.Integrations.ShopifyCustomer
   alias Moria.Integrations.ShopifyOrder
   alias Moria.Integrations.ShopifyProduct
@@ -13,10 +14,10 @@ defmodule Moria.Insights.Handlers.Brief do
   @doc """
   Returns the weekly brief containing the key insights for the week
   - Top 5 customers total spend
-  - Quickly selling products
   - New products added
-  - Products getting interest
+  - Most ordered products
   """
+  @spec weekly_brief(User.t()) :: Brief.t()
   def weekly_brief(user) do
     with top_customers <- find_top_customers_total_spend(user),
          new_products <- find_new_products(user),
@@ -27,7 +28,7 @@ defmodule Moria.Insights.Handlers.Brief do
   end
 
   defp build_report(top_customers, new_products, high_interest_products) do
-    %{}
+    %Brief{}
     |> build_top_customers_total_spend(top_customers)
     |> build_new_products(new_products)
     |> build_high_interest_products(high_interest_products)
@@ -38,7 +39,7 @@ defmodule Moria.Insights.Handlers.Brief do
   end
 
   defp build_high_interest_products(result, %{max_quantity: 0}) do
-    Map.put(result, :high_interest_products, %{quanity: 0, products: []})
+    Map.put(result, :high_interest_products, %{quantity: 0, products: []})
   end
 
   defp build_high_interest_products(result, high_interest_products) do
@@ -47,7 +48,7 @@ defmodule Moria.Insights.Handlers.Brief do
 
     product_ids =
       product_orders
-      |> Enum.filter(fn {_product_id, quanity} -> quanity == max_quantity end)
+      |> Enum.filter(fn {_product_id, quantity} -> quantity == max_quantity end)
       |> Enum.map(fn {product_id, _} -> product_id end)
 
     products = Repo.all(from(sp in ShopifyProduct, where: sp.shopify_id in ^product_ids))
@@ -76,11 +77,11 @@ defmodule Moria.Insights.Handlers.Brief do
       if order.line_items do
         Enum.reduce(order.line_items, acc, fn line_item, acc ->
           product_id = line_item["product_id"]
-          quanity = line_item["quantity"]
-          acc = Map.update(acc, product_id, quanity, &(&1 + quanity))
+          quantity = line_item["quantity"]
+          acc = Map.update(acc, product_id, quantity, &(&1 + quantity))
 
           if Map.get(acc, product_id) > acc.max_quantity do
-            Map.put(acc, :max_quantity, quanity)
+            Map.put(acc, :max_quantity, quantity)
           else
             acc
           end

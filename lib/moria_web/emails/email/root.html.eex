@@ -4,11 +4,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Kept</title>
     <style>
+      .header {
+          padding: 20px 60px;
+          margin: 0 auto;
+          max-width: 460px;
+          border-radious: 10px;
+          position: relative;
+      }
+
       .container {
           background-color: #FFFFFF;
           padding: 60px 60px;
           margin: 0 auto 30px;
-          max-width: 440px;
+          max-width: 460px;
           box-shadow: 5px 12px 36px rgba(0, 35, 75, 0.10);
           border-radious: 10px;
       }
@@ -21,6 +29,13 @@
           font-size: 16pt;
           text-decoration-line: none;
           box-shadow: 5px 12px 36px rgba(0, 35, 75, 0.15);
+        }
+
+      .link {
+          color: #5c5d68;
+          font-size: 14pt;
+          font-weight: 300;
+          text-decoration-line: none;
         }
 
       @media (max-width: 500px) {
@@ -42,16 +57,16 @@
   </head>
   <body style="background-color: #FFFFFF !important; padding: 0; margin: 0; height: 100%; width: 100%;" class="body">
     <div style="background-color: #FFFFFF; font-size: 16px; line-height: 1.5; color: rgba(0, 35, 75, 0.6); overflow: hidden">
-      <div style="display: flex;">
+      <div class="header" style="display: flex; justify-content: center;">
         <a href="https://app.gokept.com">
-         <!-- <img
+          <img
             class="logo-header"
             src="https://kept-assets.s3.amazonaws.com/logo.png"
             alt="Kept Logo"
             width="135"
-            style="display: block; margin: 0 auto 48px;" /> -->
+            style="display: block;" />
         </a>
-        <a href="" style="color: #1a1c20; padding: 12px;">view on Kept</a>
+        <a href="https://app.gokept.com" style="color: #1a1c20; position: absolute; top: 20%; right: 0;">view on Kept</a>
       </div>
       <div class="container">
         <%= @inner_content %>

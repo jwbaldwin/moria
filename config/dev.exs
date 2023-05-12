@@ -41,3 +41,12 @@ config :cors_plug,
   origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
   max_age: 86400,
   methods: ["*"]
+
+# CRON workers, configured to @hourly for testing
+config :moria, Oban,
+  plugins: [
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"@hourly", Moria.Insights.Services.EnqueueWeeklyBriefEmailWorker}
+     ]}
+  ]

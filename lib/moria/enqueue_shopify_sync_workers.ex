@@ -1,13 +1,11 @@
 defmodule Moria.EnqueueShopifySyncWorkers do
   @moduledoc """
   Insert workers to sync:
-   - Orders
    - Customers
-   - Products
+   - Products -> enqueues -> Orders
   """
 
   alias Moria.Integrations.Integration
-  alias Moria.Workers.ShopifyOrdersSyncWorker
   alias Moria.Workers.ShopifyCustomersSyncWorker
   alias Moria.Workers.ShopifyProductsSyncWorker
 

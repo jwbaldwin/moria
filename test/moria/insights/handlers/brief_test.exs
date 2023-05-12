@@ -3,6 +3,18 @@ defmodule Moria.Insights.Handlers.BriefTest do
 
   alias Moria.Insights.Handlers.Brief
 
+  test "has sane defaults when there is no activity in the past week" do
+    user = insert(:user)
+    insert(:integration, user: user)
+
+    {:ok,
+     %Moria.Insights.Brief{
+       new_products: [],
+       top_customers: %{total_spent: 0, top_customers: []},
+       high_interest_products: %{quantity: 0, products: []}
+     }} = Brief.weekly_brief(user)
+  end
+
   test "finds the new products published the previous week" do
     user = insert(:user)
     integration = insert(:integration, user: user)

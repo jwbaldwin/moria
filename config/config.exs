@@ -18,9 +18,10 @@ config :moria, MoriaWeb.Endpoint,
   live_view: [signing_salt: "tlg8TYXh"]
 
 # Oban configuration
+# 30 days before pruning
 config :moria, Oban,
   repo: Moria.Repo,
-  plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+  plugins: [{Oban.Plugins.Pruner, max_age: 43200}],
   queues: [default: 10]
 
 # Tesla configuration
