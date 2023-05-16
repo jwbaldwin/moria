@@ -19,10 +19,13 @@ defmodule MoriaWeb.ConnCase do
 
   using do
     quote do
+      use MoriaWeb, :verified_routes
+
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import MoriaWeb.ConnCase
+      import Moria.Factory
 
       alias MoriaWeb.Router.Helpers, as: Routes
 

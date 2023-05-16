@@ -11,7 +11,9 @@ defmodule MoriaWeb.RegistrationController do
     |> Pow.Plug.create_user(user_params)
     |> case do
       {:ok, _user, conn} ->
-        json(conn, %{
+        conn
+        |> put_status(:created)
+        |> json(%{
           data: %{
             access_token: conn.private.api_access_token,
             renewal_token: conn.private.api_renewal_token

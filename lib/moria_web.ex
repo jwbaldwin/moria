@@ -16,6 +16,7 @@ defmodule MoriaWeb do
   below. Instead, define any helper function in modules
   and import those modules here.
   """
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def controller do
     quote do
@@ -24,6 +25,8 @@ defmodule MoriaWeb do
       import Plug.Conn
       import MoriaWeb.Gettext
       alias MoriaWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
     end
   end
 
@@ -66,6 +69,17 @@ defmodule MoriaWeb do
       import MoriaWeb.ErrorHelpers
       import MoriaWeb.Gettext
       alias MoriaWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: MoriaWeb.Endpoint,
+        router: MoriaWeb.Router,
+        statics: MoriaWeb.static_paths()
     end
   end
 

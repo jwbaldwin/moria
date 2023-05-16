@@ -47,6 +47,6 @@ config :moria, Oban,
   plugins: [
     {Oban.Plugins.Cron,
      crontab: [
-       {"@hourly", Moria.Insights.Services.EnqueueWeeklyBriefEmailWorker}
+       # {"@hourly", Moria.Insights.Services.EnqueueWeeklyBriefEmailWorker}
      ]}
   ]
