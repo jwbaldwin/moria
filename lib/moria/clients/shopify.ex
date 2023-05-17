@@ -1,43 +1,47 @@
 defmodule Moria.Clients.Shopify do
   alias Moria.Integrations.Integration
 
-  def orders(client, full_link), do: Tesla.get(client, full_link)
+  def orders(client, %{link: full_link}), do: Tesla.get(client, full_link)
 
-  def orders(client) do
+  def orders(client, %{since: since}) do
     fields =
       ~w(created_at customer email id line_items name number order_number processed_at source_url total_price updated_at user_id)
       |> Enum.join(",")
 
     Tesla.get(
       client,
-      "orders.json?fields=#{fields}"
+      "orders.json?#{build_attributes(since, fields)}"
     )
   end
 
-  def products(client, full_link), do: Tesla.get(client, full_link)
+  def products(client, %{link: full_link}), do: Tesla.get(client, full_link)
 
-  def products(client) do
+  def products(client, %{since: since}) do
     fields =
       ~w(body_html created_at handle id options product_type published_at status title updated_at vendor)
       |> Enum.join(",")
 
     Tesla.get(
       client,
-      "products.json?fields=#{fields}"
+      "products.json?#{build_attributes(since, fields)}"
     )
   end
 
-  def customers(client, full_link), do: Tesla.get(client, full_link)
+  def customers(client, %{link: full_link}), do: Tesla.get(client, full_link)
 
-  def customers(client) do
+  def customers(client, %{since: since}) do
     fields =
       ~w(created_at email email_marketing_consent first_name id last_name phone sms_marketing_consent total_spent updated_at verified_email)
       |> Enum.join(",")
 
     Tesla.get(
       client,
-      "customers.json?fields=#{fields}"
+      "customers.json?#{build_attributes(since, fields)}"
     )
+  end
+
+  defp build_attributes(since, fields) do
+    "since=#{since}&fields=#{fields}"
   end
 
   @doc """

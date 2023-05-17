@@ -10,6 +10,8 @@ defmodule MoriaWeb.Router do
     plug Pow.Plug.RequireAuthenticated, error_handler: MoriaWeb.Auth.ErrorHandler
   end
 
+  get "/", MoriaWeb.HealthController, singleton: true, only: [:index]
+
   scope "/api", MoriaWeb do
     pipe_through :api
 

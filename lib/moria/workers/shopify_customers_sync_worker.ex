@@ -16,7 +16,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
     {:ok, integration} = Integrations.get_by_shop(shop)
     client = Shopify.client(integration)
 
-    with {:ok, response} <- Shopify.customers(client, link),
+    with {:ok, response} <- Shopify.customers(client, %{link: link}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyCustomer,
@@ -28,11 +28,11 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
   end
 
   # The first run
-  def do_perform(%{"shop" => shop}) do
+  def do_perform(%{"shop" => shop, "since" => since}) do
     {:ok, integration} = Integrations.get_by_shop(shop)
     client = Shopify.client(integration)
 
-    with {:ok, response} <- Shopify.customers(client),
+    with {:ok, response} <- Shopify.customers(client, %{since: since}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyCustomer,

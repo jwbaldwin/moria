@@ -12,6 +12,7 @@ defmodule Moria.Integrations.Integration do
     field :type, Ecto.Enum, values: [:shopify]
     field :access_token, :string
     field :shop, :string
+    field :last_synced, :utc_datetime
 
     belongs_to :user, User
 
@@ -22,11 +23,13 @@ defmodule Moria.Integrations.Integration do
     timestamps()
   end
 
+  @fields [:type, :shop, :access_token, :user_id, :last_synced]
+
   @doc false
   def changeset(integration, attrs) do
     integration
-    |> cast(attrs, [:type, :shop, :access_token, :user_id])
-    |> validate_required([:type, :shop, :access_token, :user_id])
+    |> cast(attrs, @fields)
+    |> validate_required(@fields)
     |> unique_constraint(:shop)
   end
 end
