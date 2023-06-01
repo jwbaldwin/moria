@@ -40,8 +40,9 @@ defmodule Moria.Clients.Shopify do
     )
   end
 
-  defp build_attributes(since, fields) do
-    "since=#{since}&fields=#{fields}"
+  defp build_attributes(_since, fields) do
+    # TODO: leverage since
+    "fields=#{fields}"
   end
 
   @doc """

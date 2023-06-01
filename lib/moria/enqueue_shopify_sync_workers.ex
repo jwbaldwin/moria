@@ -3,8 +3,8 @@ defmodule Moria.EnqueueShopifySyncWorkers do
   Insert workers to sync:
    - Customers
    - Products -> enqueues -> Orders
-   
-   Also updates the `last_synced` timestamp for the Integration
+
+   Then updates the `last_synced` timestamp for the integration
   """
 
   alias Moria.Integrations
