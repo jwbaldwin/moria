@@ -30,6 +30,12 @@ defmodule MoriaWeb.Router do
     get "/insights/orders", InsightsController, :orders
     get "/insights/products", InsightsController, :products
     get "/insights/customers", InsightsController, :customers
+
+    scope "/webhooks/shopify" do
+      get "/customers/data-request", ShopifyWebhookController, :data_request
+      get "/customers/redact", ShopifyWebhookController, :customers_redact
+      get "/shop/redact", ShopifyWebhookController, :shop_redact
+    end
   end
 
   # Enables LiveDashboard only for development
