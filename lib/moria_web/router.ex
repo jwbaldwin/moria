@@ -32,9 +32,9 @@ defmodule MoriaWeb.Router do
     get "/insights/customers", InsightsController, :customers
 
     scope "/webhooks/shopify" do
-      get "/customers/data-request", ShopifyWebhookController, :data_request
-      get "/customers/redact", ShopifyWebhookController, :customers_redact
-      get "/shop/redact", ShopifyWebhookController, :shop_redact
+      post "/customers/data-request", ShopifyWebhookController, :data_request
+      post "/customers/redact", ShopifyWebhookController, :customers_redact
+      post "/shop/redact", ShopifyWebhookController, :shop_redact
     end
   end
 
