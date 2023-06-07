@@ -81,7 +81,7 @@ if config_env() == :prod do
   config :shopify,
     client_id: System.get_env("SHOPIFY_CLIENT_ID") || "",
     client_secret: System.get_env("SHOPIFY_CLIENT_SECRET") || "",
-    scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_products"
+    scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products"
 
   config :moria, Oban,
     plugins: [
