@@ -23,13 +23,14 @@ defmodule Moria.Integrations.Integration do
     timestamps()
   end
 
-  @fields [:type, :shop, :access_token, :user_id, :last_synced]
+  @required_fields [:type, :shop, :access_token, :user_id]
+  @fields [:last_synced | @required_fields]
 
   @doc false
   def changeset(integration, attrs) do
     integration
     |> cast(attrs, @fields)
-    |> validate_required(@fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:shop)
   end
 end

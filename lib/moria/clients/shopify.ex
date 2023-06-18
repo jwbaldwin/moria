@@ -40,6 +40,13 @@ defmodule Moria.Clients.Shopify do
     )
   end
 
+  @doc """
+  Fetch the shops configuration
+  """
+  def shop_info(client) do
+    Tesla.get(client, "shop.json")
+  end
+
   defp build_attributes(_since, fields) do
     # TODO: leverage since
     "fields=#{fields}"
@@ -49,6 +56,16 @@ defmodule Moria.Clients.Shopify do
   Build dynamic client based on runtime arguments
   """
   def client(%Integration{shop: shop, access_token: access_token}) do
+    middleware = [
+      {Tesla.Middleware.BaseUrl, "https://#{shop}.myshopify.com/admin/api/2023-04"},
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers, [{"X-Shopify-Access-Token", access_token}]}
+    ]
+
+    Tesla.client(middleware)
+  end
+
+  def raw_client(%{shop: shop, access_token: access_token}) do
     middleware = [
       {Tesla.Middleware.BaseUrl, "https://#{shop}.myshopify.com/admin/api/2023-04"},
       Tesla.Middleware.JSON,

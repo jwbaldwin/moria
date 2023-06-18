@@ -129,9 +129,9 @@ defmodule Moria.Insights.Handlers.Brief do
         where: integration.user_id == ^user.id,
         where: orders.processed_at <= ^end_of_week and orders.processed_at >= ^start_of_week,
         group_by: customer.id,
-        order_by: [desc: fragment("sum(?)", orders.total_price)],
+        order_by: [desc: fragment("sum(?)", type(orders.total_price, :decimal))],
         limit: 5,
-        select: %{customer: customer, total_spent: sum(orders.total_price)}
+        select: %{customer: customer, total_spent: sum(type(orders.total_price, :decimal))}
       )
 
     Repo.all(query)

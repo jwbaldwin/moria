@@ -47,6 +47,25 @@ defmodule MoriaWeb.SessionController do
     end
   end
 
+  @spec update(Conn.t(), map()) :: Conn.t()
+  def update(conn, %{"user" => params}) do
+    conn
+    |> Pow.Plug.update_user(params)
+    |> case do
+      {:ok, user, conn} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{user: user})
+
+      error ->
+        IO.inspect(error)
+
+        conn
+        |> put_status(400)
+        |> json(%{})
+    end
+  end
+
   @spec delete(Conn.t(), map()) :: Conn.t()
   def delete(conn, _params) do
     conn

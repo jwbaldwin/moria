@@ -8,6 +8,7 @@ defmodule MoriaWeb.IntegrationsController do
   require Logger
 
   alias Moria.Integrations
+  alias Moria.Integrations.Services.AttachAndCreateUser
 
   action_fallback MoriaWeb.FallbackController
 
@@ -25,12 +26,12 @@ defmodule MoriaWeb.IntegrationsController do
       |> Map.delete("scopes")
       |> Map.delete("shop")
 
-    user_id = conn.assigns.current_user.id
-
     with {:ok, %Req.Response{status: 200, body: body}} <-
            Req.post(auth_token_url, json: json_data),
          true <- verify_scopes(body, scopes),
-         integration_params <- build_integration_params(user_id, body, shop),
+         {:ok, user, conn} <-
+           maybe_create_user(conn, %{shop: shop, access_token: body["access_token"]}),
+         integration_params <- build_integration_params(user.id, body, shop),
          {:ok, integration} <- Integrations.upsert_integration(integration_params) do
       Moria.EnqueueShopifySyncWorkers.call(integration)
 
@@ -47,6 +48,15 @@ defmodule MoriaWeb.IntegrationsController do
   defp verify_scopes(%{"scope" => returned_scopes}, requested_scopes) do
     Enum.sort(String.split(returned_scopes, ",")) ==
       Enum.sort(String.split(requested_scopes, ","))
+  end
+
+  defp maybe_create_user(conn, params) do
+    if conn.assigns.current_user do
+      {:ok, conn, conn.assigns.current_user}
+    else
+      {:ok, user_params} = AttachAndCreateUser.call(params)
+      Pow.Plug.create_user(conn, user_params)
+    end
   end
 
   defp build_integration_params(user_id, %{"access_token" => access_token}, shop) do

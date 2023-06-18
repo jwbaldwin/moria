@@ -16,15 +16,16 @@ defmodule MoriaWeb.Router do
     pipe_through :api
 
     resources "/registration", RegistrationController, singleton: true, only: [:create]
-    resources "/session", SessionController, singleton: true, only: [:create, :delete]
+    resources "/session", SessionController, singleton: true, only: [:create, :delete, :update]
     post "/session/renew", SessionController, :renew
+
+    post "/oauth/shopify", IntegrationsController, :shopify
   end
 
   scope "/api", MoriaWeb do
     pipe_through [:api, :api_protected]
 
     get "/integrations", IntegrationsController, :index
-    post "/oauth/shopify", IntegrationsController, :shopify
 
     get "/insights/weekly-brief", InsightsController, :weekly_brief
     get "/insights/orders", InsightsController, :orders
