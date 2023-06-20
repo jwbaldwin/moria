@@ -20,6 +20,7 @@ defmodule MoriaWeb.Router do
     post "/session/renew", SessionController, :renew
 
     post "/oauth/shopify", IntegrationsController, :shopify
+    get "/oauth/shopify/:shop", IntegrationsController, :shop_check
 
     scope "/webhooks/shopify" do
       post "/customers/data-request", ShopifyWebhookController, :data_request

@@ -46,6 +46,20 @@ defmodule MoriaWeb.IntegrationsController do
     end
   end
 
+  def shop_check(conn, %{"shop" => shop}, _) do
+    case Integrations.get_by_shop(shop) do
+      {:ok, shop} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{shop: shop})
+
+      {:error, _} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{})
+    end
+  end
+
   defp verify_scopes(%{"scope" => returned_scopes}, requested_scopes) do
     Enum.sort(String.split(returned_scopes, ",")) ==
       Enum.sort(String.split(requested_scopes, ","))
