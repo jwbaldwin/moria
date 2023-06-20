@@ -20,6 +20,12 @@ defmodule MoriaWeb.Router do
     post "/session/renew", SessionController, :renew
 
     post "/oauth/shopify", IntegrationsController, :shopify
+
+    scope "/webhooks/shopify" do
+      post "/customers/data-request", ShopifyWebhookController, :data_request
+      post "/customers/redact", ShopifyWebhookController, :customers_redact
+      post "/shop/redact", ShopifyWebhookController, :shop_redact
+    end
   end
 
   scope "/api", MoriaWeb do
@@ -31,12 +37,6 @@ defmodule MoriaWeb.Router do
     get "/insights/orders", InsightsController, :orders
     get "/insights/products", InsightsController, :products
     get "/insights/customers", InsightsController, :customers
-
-    scope "/webhooks/shopify" do
-      post "/customers/data-request", ShopifyWebhookController, :data_request
-      post "/customers/redact", ShopifyWebhookController, :customers_redact
-      post "/shop/redact", ShopifyWebhookController, :shop_redact
-    end
   end
 
   # Enables LiveDashboard only for development
