@@ -7,6 +7,7 @@ defmodule MoriaWeb.IntegrationsController do
 
   require Logger
 
+  alias Moria.Clients.Shopify
   alias Moria.Integrations
   alias Moria.Integrations.Services.AttachAndCreateUser
   alias Moria.Users
@@ -47,13 +48,14 @@ defmodule MoriaWeb.IntegrationsController do
   end
 
   def shop_check(conn, %{"shop" => shop}, _) do
-    case Integrations.get_by_shop(shop) do
-      {:ok, shop} ->
-        conn
-        |> put_status(:ok)
-        |> json(%{shop: shop})
-
-      {:error, _} ->
+    with {:ok, integration} <- Integrations.get_by_shop(shop),
+         client <- Shopify.client(integration),
+         {:ok, _} <- Shopify.shop_info(client) do
+      conn
+      |> put_status(:ok)
+      |> json(%{shop: integration.shop})
+    else
+      _error ->
         conn
         |> put_status(:not_found)
         |> json(%{})
