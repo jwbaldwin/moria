@@ -53,7 +53,7 @@ defmodule MoriaWeb.IntegrationsController do
 
   defp maybe_create_user(conn, params) do
     if conn.assigns.current_user do
-      {:ok, conn, conn.assigns.current_user}
+      {:ok, conn.assigns.current_user, conn}
     else
       {:ok, user_params} = AttachAndCreateUser.call(params)
 
