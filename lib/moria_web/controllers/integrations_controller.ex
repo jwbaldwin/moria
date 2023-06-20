@@ -9,6 +9,7 @@ defmodule MoriaWeb.IntegrationsController do
 
   alias Moria.Integrations
   alias Moria.Integrations.Services.AttachAndCreateUser
+  alias Moria.Users
 
   action_fallback MoriaWeb.FallbackController
 
@@ -55,7 +56,14 @@ defmodule MoriaWeb.IntegrationsController do
       {:ok, conn, conn.assigns.current_user}
     else
       {:ok, user_params} = AttachAndCreateUser.call(params)
-      Pow.Plug.create_user(conn, user_params)
+
+      case Users.get_user_by_email(user_params.email) do
+        nil ->
+          Pow.Plug.create_user(conn, user_params)
+
+        user ->
+          {:ok, user, conn}
+      end
     end
   end
 
