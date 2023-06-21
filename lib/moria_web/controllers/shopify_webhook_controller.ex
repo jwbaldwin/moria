@@ -33,16 +33,22 @@ defmodule MoriaWeb.ShopifyWebhookController do
     end
   end
 
+  defp verify_hmac(hmac, params) when is_nil(hmac) or is_nil(params), do: false
+
   defp verify_hmac(hmac, params) do
-    hmac_key = Application.get_env(:tiger, :shopify_client_secret)
+    try do
+      hmac_key = Application.get_env(:tiger, :shopify_client_secret)
 
-    # Generate the expected hmac
-    generated_hmac_binary =
-      :hmac
-      |> :crypto.mac(:sha256, hmac_key, params)
-      |> Base.encode64(case: :lower)
+      # Generate the expected hmac
+      generated_hmac_binary =
+        :hmac
+        |> :crypto.mac(:sha256, hmac_key, params)
+        |> Base.encode64(case: :lower)
 
-    # Compare the provided hmac to the generated hmac
-    Plug.Crypto.secure_compare(hmac, generated_hmac_binary)
+      # Compare the provided hmac to the generated hmac
+      Plug.Crypto.secure_compare(hmac, generated_hmac_binary)
+    rescue
+      _error -> false
+    end
   end
 end
