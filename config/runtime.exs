@@ -78,10 +78,11 @@ if config_env() == :prod do
     max_age: 86400,
     methods: ["*"]
 
-  config :shopify,
-    client_id: System.get_env("SHOPIFY_CLIENT_ID") || "",
-    client_secret: System.get_env("SHOPIFY_CLIENT_SECRET") || "",
-    scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products"
+  config :moria,
+    shopify_client_id: System.get_env("SHOPIFY_CLIENT_ID") || "",
+    shopify_client_secret: System.get_env("SHOPIFY_CLIENT_SECRET") || "",
+    shopify_scopes:
+      "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products"
 
   config :moria, Oban,
     plugins: [

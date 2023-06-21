@@ -5,20 +5,20 @@ defmodule MoriaWeb.ShopifyWebhookController do
 
   def data_request(conn, params) do
     Logger.info("Recieved a data_request request with params: #{inspect(params)}")
-    handle_response(conn, params)
+    handle_response(conn)
   end
 
   def customers_redact(conn, params) do
     Logger.info("Recieved a customers_redact request with params: #{inspect(params)}")
-    handle_response(conn, params)
+    handle_response(conn)
   end
 
   def shop_redact(conn, params) do
     Logger.info("Recieved a shop_request request with params: #{inspect(params)}")
-    handle_response(conn, params)
+    handle_response(conn)
   end
 
-  defp handle_response(conn, params) do
+  defp handle_response(conn) do
     [hmac] = get_req_header(conn, "x-shopify-hmac-sha256")
     raw_params = conn.assigns[:raw_body]
 
@@ -34,7 +34,7 @@ defmodule MoriaWeb.ShopifyWebhookController do
   end
 
   defp verify_hmac(hmac, params) do
-    hmac_key = Application.get_env(:shopify, :client_secret)
+    hmac_key = Application.get_env(:tiger, :shopify_client_secret)
 
     # Generate the expected hmac
     generated_hmac_binary =
