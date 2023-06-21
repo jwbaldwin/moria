@@ -19,17 +19,17 @@ defmodule MoriaWeb.ShopifyWebhookController do
   end
 
   defp handle_response(conn) do
-    [hmac] = get_req_header(conn, "x-shopify-hmac-sha256")
-    raw_params = conn.assigns[:raw_body]
-
-    if verify_hmac(hmac, raw_params) do
+    with [hmac] <- get_req_header(conn, "x-shopify-hmac-sha256"),
+         raw_params <- conn.assigns[:raw_body],
+         true <- verify_hmac(hmac, raw_params) do
       conn
       |> put_status(:ok)
       |> json(%{})
     else
-      conn
-      |> put_status(:unauthorized)
-      |> json(%{})
+      _error ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{})
     end
   end
 
