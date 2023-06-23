@@ -50,7 +50,7 @@ defmodule MoriaWeb.IntegrationsController do
   def shop_check(conn, %{"shop" => shop}, _) do
     with {:ok, integration} <- Integrations.get_by_shop(shop),
          client <- Shopify.client(integration),
-         {:ok, _} <- Shopify.shop_info(client) do
+         {:ok, %{status: 200}} <- Shopify.shop_info(client) do
       conn
       |> put_status(:ok)
       |> json(%{shop: integration.shop})

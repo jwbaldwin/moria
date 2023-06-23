@@ -46,7 +46,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
   defp maybe_enqueue_worker(shop, headers) do
     case NextLinkExtractor.call(headers) do
       nil ->
-        # All orders loaded, import customers
+        # All customers loaded, import orders and attach
         Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop}))
 
       link ->

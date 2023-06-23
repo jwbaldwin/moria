@@ -170,8 +170,11 @@ defmodule Moria.Integrations do
     end
   end
 
+  @default 65_535
+  defp get_batch_size(nil), do: @default
+
   defp get_batch_size([resource | _rest]) do
-    div(65_535, length(Map.keys(resource)))
+    div(@default, length(Map.keys(resource)))
   end
 
   defp build_shopify_resource(ShopifyProduct, product, integration_id) do
