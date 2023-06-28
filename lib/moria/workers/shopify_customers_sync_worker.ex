@@ -23,7 +23,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
              response.body["customers"],
              integration.id
            ) do
-      maybe_enqueue_worker(shop, response.headers)
+      maybe_enqueue_worker(shop, response.headers, integration.last_synced)
     end
   end
 
@@ -39,15 +39,15 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
              response.body["customers"],
              integration.id
            ) do
-      maybe_enqueue_worker(shop, response.headers)
+      maybe_enqueue_worker(shop, response.headers, integration.last_synced)
     end
   end
 
-  defp maybe_enqueue_worker(shop, headers) do
+  defp maybe_enqueue_worker(shop, headers, since) do
     case NextLinkExtractor.call(headers) do
       nil ->
         # All customers loaded, import orders and attach
-        Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop}))
+        Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop, since: since}))
 
       link ->
         %{shop: shop, link: link}

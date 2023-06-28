@@ -64,7 +64,7 @@ defmodule Moria.Insights.Handlers.Brief do
       |> Enum.reduce(acc, fn %{total_spent: total_spent} = per_customer_data, acc ->
         acc
         |> Map.update(:total_spent, 0, fn current -> Decimal.add(current, total_spent) end)
-        |> Map.put(:customers, [per_customer_data | acc.top_customers])
+        |> Map.put(:top_customers, [per_customer_data | acc.top_customers])
       end)
 
     Map.put(result, :top_customers, report)
