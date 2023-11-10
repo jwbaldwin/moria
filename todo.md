@@ -1,12 +1,1 @@
 # Syncing an onboarded shopify store
-- Store their integration
-- Begin syncing:
-    - products
-    - customers
-    - orders
-    - fields defined, limit the amount per page and go through until no records
-- async insert_all v fast, chunked etc.
-- need to be scoped by shop
-- needs to be durable, using oban
-- then i need to stay in sync somehow
-    - probably by a cronjob that will sync the 3 each day or something

@@ -49,6 +49,26 @@ config :moria, :pow,
   controller_callbacks: Pow.Extension.Phoenix.ControllerCallbacks,
   mailer_backend: MoriaWeb.Emails.Mailer
 
+config :shopifex,
+  repo: Moria.Repo,
+  app_name: "Kept Retention",
+  web_module: MoriaWeb,
+  shop_schema: Moria.ShopifyShops.ShopifyShop,
+  plan_schema: Moria.ShopifyShops.ShopifyPlan,
+  grant_schema: Moria.ShopifyShops.ShopifyGrant,
+  payment_guard: Moria.ShopifyPaymentGuard,
+  redirect_uri: "https://5d3c-96-241-47-175.ngrok-free.app/auth/install",
+  reinstall_uri: "https://5d3c-96-241-47-175.ngrok-free.app/auth/update",
+  webhook_uri: "https://5d3c-96-241-47-175.ngrok-free.app/webhook",
+  payment_redirect_uri: "https://5d3c-96-241-47-175.ngrok-free.app/payment/complete",
+  scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products",
+  # TODO: update
+  api_key: "52eea89b92c2ac05d1ca95500c88d251",
+  # TODO: update
+  secret: "c7f9530194695d91445f503bb3c3659a",
+  # These are automatically subscribed on a store upon install
+  webhook_topics: ["app/uninstalled"]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

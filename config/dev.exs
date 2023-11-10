@@ -36,12 +36,6 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :moria,
-  shopify_client_id: System.get_env("SHOPIFY_CLIENT_ID") || "",
-  shopify_client_secret: System.get_env("SHOPIFY_CLIENT_SECRET") || "",
-  shopify_scopes:
-    "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products"
-
 # Configure CORS
 config :cors_plug,
   origin: ["http://localhost:3000", "http://127.0.0.1:3000"],

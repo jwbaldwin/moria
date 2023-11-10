@@ -1,54 +1,43 @@
-defmodule MoriaWeb.ShopifyWebhookController do
-  use MoriaWeb, :controller
+defmodule RetentionWeb.ShopifyWebhookController do
+  use RetentionWeb, :controller
+  use ShopifexWeb.WebhookController
 
   require Logger
 
-  def data_request(conn, params) do
-    Logger.info("Recieved a data_request request with params: #{inspect(params)}")
-    handle_response(conn)
+  @moduledoc """
+  For available callbacks, see https://hexdocs.pm/shopifex/ShopifexWeb.WebhookController.html
+  """
+
+  # add as many handle_topic/3 functions here as you like! This basic one handles app uninstallation
+  def handle_topic(conn, shop, "app/uninstalled") do
+    Shopifex.Shops.delete_shop(shop)
+
+    conn
+    |> send_resp(200, "success")
   end
 
-  def customers_redact(conn, params) do
-    Logger.info("Recieved a customers_redact request with params: #{inspect(params)}")
-    handle_response(conn)
+  # Mandatory Shopify shop data erasure GDPR webhook. Simply delete the shop record
+  def handle_topic(conn, shop, "shop/redact") do
+    Shopifex.Shops.delete_shop(shop)
+
+    conn
+    |> send_resp(204, "")
   end
 
-  def shop_redact(conn, params) do
-    Logger.info("Recieved a shop_request request with params: #{inspect(params)}")
-    handle_response(conn)
+  # Mandatory Shopify customer data erasure GDPR webhook. Simply delete the shop (customer) record
+  def handle_topic(conn, shop, "customers/redact") do
+    Shopifex.Shops.delete_shop(shop)
+
+    conn
+    |> send_resp(204, "")
   end
 
-  defp handle_response(conn) do
-    with [hmac] <- get_req_header(conn, "x-shopify-hmac-sha256"),
-         raw_params <- conn.assigns[:raw_body],
-         true <- verify_hmac(hmac, raw_params) do
-      conn
-      |> put_status(:ok)
-      |> json(%{})
-    else
-      _error ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{})
-    end
-  end
+  # Mandatory Shopify customer data request GDPR webhook.
+  def handle_topic(conn, shop, "customers/data_request") do
+    # Send an email of the shop data to the customer.
+    Logger.warning("customers/data_request received for #{shop} - send email of customer data.")
 
-  defp verify_hmac(hmac, params) when is_nil(hmac) or is_nil(params), do: false
-
-  defp verify_hmac(hmac, params) do
-    try do
-      hmac_key = Application.get_env(:tiger, :shopify_client_secret)
-
-      # Generate the expected hmac
-      generated_hmac_binary =
-        :hmac
-        |> :crypto.mac(:sha256, hmac_key, params)
-        |> Base.encode64(case: :lower)
-
-      # Compare the provided hmac to the generated hmac
-      Plug.Crypto.secure_compare(hmac, generated_hmac_binary)
-    rescue
-      _error -> false
-    end
+    conn
+    |> send_resp(202, "Accepted")
   end
 end

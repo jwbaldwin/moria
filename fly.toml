@@ -10,7 +10,7 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "api.gokept.com"
+  PHX_HOST = "app.gokept.com"
   PORT = "8080"
 
 [experimental]

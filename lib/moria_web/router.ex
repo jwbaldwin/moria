@@ -1,43 +1,49 @@
 defmodule MoriaWeb.Router do
   use MoriaWeb, :router
 
+  require ShopifexWeb.Routes
+
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {MoriaWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
-    plug MoriaWeb.Auth.AuthPlug, otp_app: :moria
   end
 
-  pipeline :api_protected do
-    plug Pow.Plug.RequireAuthenticated, error_handler: MoriaWeb.Auth.ErrorHandler
+  ShopifexWeb.Routes.pipelines()
+
+  # Include all auth (when Shopify requests to render your app in an iframe), installation and update routes
+  ShopifexWeb.Routes.auth_routes(MoriaWeb.ShopifyAuthController)
+
+  # Include all payment routes
+  ShopifexWeb.Routes.payment_routes(MoriaWeb.ShopifyPaymentController)
+
+  # Endpoints accessible within the Shopify admin panel iFrame.
+  # Don't include this scope block if you are creating a SPA.
+  scope "/", MoriaWeb do
+    pipe_through [:shopifex_browser, :shopify_session]
+
+    get "/", PageController, :home
   end
 
-  get "/", MoriaWeb.HealthController, singleton: true, only: [:index]
+  # Make your webhook endpoint look like this
+  scope "/webhook", MoriaWeb do
+    pipe_through [:shopify_webhook]
 
-  scope "/api", MoriaWeb do
-    pipe_through :api
-
-    resources "/registration", RegistrationController, singleton: true, only: [:create]
-    resources "/session", SessionController, singleton: true, only: [:create, :delete, :update]
-    post "/session/renew", SessionController, :renew
-
-    post "/oauth/shopify", IntegrationsController, :shopify
-    get "/oauth/shopify/:shop", IntegrationsController, :shop_check
-
-    scope "/webhooks/shopify" do
-      post "/customers/data-request", ShopifyWebhookController, :data_request
-      post "/customers/redact", ShopifyWebhookController, :customers_redact
-      post "/shop/redact", ShopifyWebhookController, :shop_redact
-    end
+    post "/", ShopifyWebhookController, :action
   end
 
-  scope "/api", MoriaWeb do
-    pipe_through [:api, :api_protected]
+  # Place your admin link endpoints in here. TODO: create this controller
+  scope "/admin-links", MoriaWeb do
+    pipe_through [:shopify_admin_link]
 
-    get "/integrations", IntegrationsController, :index
-
-    get "/insights/weekly-brief", InsightsController, :weekly_brief
-    get "/insights/orders", InsightsController, :orders
-    get "/insights/products", InsightsController, :products
-    get "/insights/customers", InsightsController, :customers
+    # get "/do-a-thing", ShopifyAdminLinkController, :do_a_thing
   end
 
   # Enables LiveDashboard only for development
