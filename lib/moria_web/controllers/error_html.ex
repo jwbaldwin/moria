@@ -1,5 +1,5 @@
-defmodule RetentionWeb.ErrorHTML do
-  use RetentionWeb, :html
+defmodule MoriaWeb.ErrorHTML do
+  use MoriaWeb, :html
 
   # If you want to customize your error pages,
   # uncomment the embed_templates/1 call below

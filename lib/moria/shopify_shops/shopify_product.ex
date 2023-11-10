@@ -1,4 +1,4 @@
-defmodule Moria.Integrations.ShopifyProduct do
+defmodule Moria.ShopifyShops.ShopifyProduct do
   @moduledoc """
   Schema to capture imported products
 
@@ -7,8 +7,6 @@ defmodule Moria.Integrations.ShopifyProduct do
   use Ecto.Schema
 
   import Ecto.Changeset
-
-  alias Moria.Integrations.Integration
 
   @derive {Jason.Encoder,
            only: [
@@ -24,19 +22,19 @@ defmodule Moria.Integrations.ShopifyProduct do
            ]}
 
   schema "shopify_products" do
-    field :shopify_id, :integer
-    field :shopify_created_at, :utc_datetime
-    field :shopify_updated_at, :utc_datetime
-    field :title, :string
-    field :status, :string
-    field :body_html, :string
-    field :handle, :string
-    field :options, {:array, :map}
-    field :product_type, :string
-    field :published_at, :utc_datetime
-    field :vendor, :string
+    field(:shopify_id, :integer)
+    field(:shopify_created_at, :utc_datetime)
+    field(:shopify_updated_at, :utc_datetime)
+    field(:title, :string)
+    field(:status, :string)
+    field(:body_html, :string)
+    field(:handle, :string)
+    field(:options, {:array, :map})
+    field(:product_type, :string)
+    field(:published_at, :utc_datetime)
+    field(:vendor, :string)
 
-    belongs_to :integration, Integration
+    belongs_to(:shop, Moria.ShopifyShops.ShopifyShop, foreign_key: :shop_id)
     timestamps()
   end
 
@@ -52,7 +50,7 @@ defmodule Moria.Integrations.ShopifyProduct do
     :shopify_created_at,
     :shopify_updated_at,
     :vendor,
-    :integration_id
+    :shop_id
   ]
 
   @doc false

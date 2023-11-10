@@ -1,5 +1,5 @@
-defmodule RetentionWeb.PageController do
-  use RetentionWeb, :controller
+defmodule MoriaWeb.PageController do
+  use MoriaWeb, :controller
 
   def home(conn, _params) do
     # The home page is often custom made,

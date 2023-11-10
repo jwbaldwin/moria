@@ -1,4 +1,4 @@
-defmodule RetentionWeb.ErrorJSON do
+defmodule MoriaWeb.ErrorJSON do
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #

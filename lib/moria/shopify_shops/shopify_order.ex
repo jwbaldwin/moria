@@ -1,4 +1,4 @@
-defmodule Moria.Integrations.ShopifyOrder do
+defmodule Moria.ShopifyShops.ShopifyOrder do
   @moduledoc """
   Schema to capture imported orders
 
@@ -8,8 +8,7 @@ defmodule Moria.Integrations.ShopifyOrder do
 
   import Ecto.Changeset
 
-  alias Moria.Integrations.Integration
-  alias Moria.Integrations.ShopifyCustomer
+  alias Moria.ShopifyShops.ShopifyCustomer
 
   @derive {Jason.Encoder,
            only: [
@@ -25,23 +24,24 @@ defmodule Moria.Integrations.ShopifyOrder do
            ]}
 
   schema "shopify_orders" do
-    field :shopify_id, :integer
-    field :shopify_created_at, :utc_datetime
-    field :shopify_updated_at, :utc_datetime
-    field :email, :string
-    field :line_items, {:array, :map}
-    field :name, :string
-    field :number, :integer
-    field :order_number, :integer
-    field :processed_at, :utc_datetime
-    field :source_url, :string
-    field :total_price, :decimal
+    field(:shopify_id, :integer)
+    field(:shopify_created_at, :utc_datetime)
+    field(:shopify_updated_at, :utc_datetime)
+    field(:email, :string)
+    field(:line_items, {:array, :map})
+    field(:name, :string)
+    field(:number, :integer)
+    field(:order_number, :integer)
+    field(:processed_at, :utc_datetime)
+    field(:source_url, :string)
+    field(:total_price, :decimal)
 
-    belongs_to :integration, Integration
+    belongs_to(:shop, Moria.ShopifyShops.ShopifyShop, foreign_key: :shop_id)
 
-    belongs_to :shopify_customer, ShopifyCustomer,
+    belongs_to(:shopify_customer, ShopifyCustomer,
       references: :shopify_id,
       foreign_key: :shopify_customer_id
+    )
 
     timestamps()
   end
@@ -59,7 +59,7 @@ defmodule Moria.Integrations.ShopifyOrder do
     :processed_at,
     :source_url,
     :total_price,
-    :integration_id,
+    :shop_id,
     :shopify_customer_id
   ]
 

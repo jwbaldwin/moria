@@ -1,4 +1,4 @@
-defmodule RetentionWeb.Gettext do
+defmodule MoriaWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 

@@ -1,5 +1,5 @@
-defmodule RetentionWeb.PageHTML do
-  use RetentionWeb, :html
+defmodule MoriaWeb.PageHTML do
+  use MoriaWeb, :html
 
-  embed_templates "page_html/*"
+  embed_templates("page_html/*")
 end

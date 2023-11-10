@@ -1,5 +1,5 @@
-defmodule RetentionWeb.ShopifyWebhookController do
-  use RetentionWeb, :controller
+defmodule MoriaWeb.ShopifyWebhookController do
+  use MoriaWeb, :controller
   use ShopifexWeb.WebhookController
 
   require Logger
