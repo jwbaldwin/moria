@@ -12,23 +12,17 @@ defmodule Moria.Integrations.Services.EnqueueWeeklySyncWorker do
 
   @impl Oban.Worker
   def perform(_) do
-    integrations = get_all_integrations_to_sync()
+    shops = get_all_shops_to_sync()
 
-    Logger.info(
-      "Enqueuing the daily integration sync worker for #{length(integrations)} Integrations"
-    )
+    Logger.info("Enqueuing the daily shop sync worker for #{length(shops)} shops")
 
-    # TODO: if I ever add integrations, need to sync them here
-    integrations
-    |> Enum.filter(&(&1.type == :shopify))
-    |> Enum.map(fn integration -> EnqueueShopifySyncWorkers.call(integration) end)
+    Enum.map(shops, fn shop -> EnqueueShopifySyncWorkers.call(shop) end)
 
     :ok
   end
 
-  # TODO: when we add companies with multiple users, we'll send this to the "owner"
-  defp get_all_integrations_to_sync() do
-    from(integration in Moria.Integrations.Integration)
+  defp get_all_shops_to_sync() do
+    from(shop in Moria.ShopifyShops.ShopifyShop)
     |> Repo.all()
   end
 end

@@ -7,13 +7,13 @@ defmodule Moria.EnqueueShopifySyncWorkers do
    Then updates the `last_synced` timestamp for the integration
   """
 
-  alias Moria.Integrations
-  alias Moria.Integrations.Integration
+  alias Moria.ShopifyShops.ShopifyShop
+  alias Moria.Shops
   alias Moria.Workers.ShopifyCustomersSyncWorker
   alias Moria.Workers.ShopifyProductsSyncWorker
 
-  def call(%Integration{} = integration) do
-    params = %{shop: integration.shop, since: integration.last_synced}
+  def call(%ShopifyShop{} = shop) do
+    params = %{shop: shop.url, since: shop.last_synced}
 
     Ecto.Multi.new()
     |> Oban.insert_all(:jobs, [
@@ -22,7 +22,7 @@ defmodule Moria.EnqueueShopifySyncWorkers do
     ])
     |> Ecto.Multi.update(
       :update_last_synced,
-      Integrations.change_integration(integration, %{last_synced: Timex.now()})
+      Shopifex.Shops.update_shop(shop, %{last_synced: Timex.now()})
     )
     |> Moria.Repo.transaction()
   end

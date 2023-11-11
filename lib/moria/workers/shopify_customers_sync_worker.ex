@@ -13,7 +13,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
   end
 
   def do_perform(%{"shop" => shop, "link" => link}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
     client = Shopify.client(integration)
 
     with {:ok, response} <- Shopify.customers(client, %{link: link}),
@@ -29,7 +29,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
 
   # The first run
   def do_perform(%{"shop" => shop, "since" => since}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
     client = Shopify.client(integration)
 
     with {:ok, response} <- Shopify.customers(client, %{since: since}),
@@ -50,7 +50,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
         Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop, since: since}))
 
       link ->
-        %{shop: shop, link: link}
+        %{shop: shop.url, link: link}
         |> new()
         |> Oban.insert()
     end

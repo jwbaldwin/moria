@@ -1,57 +1,32 @@
-defmodule Moria.Integrations do
+defmodule Moria.ShopifyShops do
   @moduledoc """
-  The Integrations context.
+  The ShopifyShops context.
   """
 
   import Ecto.Query, warn: false
   alias Moria.Repo
 
-  alias Moria.Integrations.Integration
-  alias Moria.Integrations.ShopifyCustomer
-  alias Moria.Integrations.ShopifyOrder
-  alias Moria.Integrations.ShopifyProduct
-
-  @doc """
-  Returns the list of integrations.
-
-  ## Examples
-
-      iex> list_integrations()
-      [%Integration{}, ...]
-
-  """
-  def list_integrations(user) do
-    Integration
-    |> where(user_id: ^user.id)
-    |> Repo.all()
-  end
+  alias Moria.ShopifyShops.ShopifyShop
+  alias Moria.ShopifyShops.ShopifyCustomer
+  alias Moria.ShopifyShops.ShopifyOrder
+  alias Moria.ShopifyShops.ShopifyProduct
 
   @doc """
   Gets a single integration.
 
-  Raises `Ecto.NoResultsError` if the Integration does not exist.
+  Raises `Ecto.NoResultsError` if the ShopifyShop does not exist.
   """
   def get_integration!(id) do
-    Integration
+    ShopifyShop
     |> Repo.get!(id)
-    |> Repo.preload(:user)
   end
 
   @doc """
   Gets a single integration by the shop name
   """
-  def get_by_shop(shop) do
-    Integration
-    |> Repo.get_by(shop: shop)
-    |> Repo.normalize_one_result()
-  end
-
-  @doc """
-  Gets a single integration by user id
-  """
-  def get_by_user(user) do
-    Integration
-    |> Repo.get_by(user_id: user.id)
+  def get_by_url(url) do
+    ShopifyShop
+    |> Repo.get_by(url: url)
     |> Repo.normalize_one_result()
   end
 
@@ -61,21 +36,21 @@ defmodule Moria.Integrations do
   ## Examples
 
       iex> create_integration(type, %{field: value})
-      {:ok, %Integration{}}
+      {:ok, %ShopifyShop{}}
 
       iex> create_integration(type, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
   def create_integration(attrs \\ %{}) do
-    %Integration{}
-    |> Integration.changeset(attrs)
+    %ShopifyShop{}
+    |> ShopifyShop.changeset(attrs)
     |> Repo.insert()
   end
 
   def upsert_integration(attrs \\ %{}) do
-    %Integration{}
-    |> Integration.changeset(attrs)
+    %ShopifyShop{}
+    |> ShopifyShop.changeset(attrs)
     |> Repo.insert(
       on_conflict: [set: [access_token: attrs.access_token]],
       conflict_target: :shop
@@ -88,15 +63,15 @@ defmodule Moria.Integrations do
   ## Examples
 
       iex> update_integration(integration, %{field: new_value})
-      {:ok, %Integration{}}
+      {:ok, %ShopifyShop{}}
 
       iex> update_integration(integration, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_integration(%Integration{} = integration, attrs) do
+  def update_integration(%ShopifyShop{} = integration, attrs) do
     integration
-    |> Integration.changeset(attrs)
+    |> ShopifyShop.changeset(attrs)
     |> Repo.update()
   end
 
@@ -106,17 +81,17 @@ defmodule Moria.Integrations do
   ## Examples
 
       iex> delete_integration(integration)
-      {:ok, %Integration{}}
+      {:ok, %ShopifyShop{}}
 
       iex> delete_integration(integration)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_integration(%Integration{} = integration) do
+  def delete_integration(%ShopifyShop{} = integration) do
     Repo.delete(integration)
   end
 
-  def delete_shopify_data(%Integration{} = integration) do
+  def delete_shopify_data(%ShopifyShop{} = integration) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete_all(
       :delete_all_products,
@@ -139,11 +114,11 @@ defmodule Moria.Integrations do
   ## Examples
 
       iex> change_integration(integration)
-      %Ecto.Changeset{data: %Integration{}}
+      %Ecto.Changeset{data: %ShopifyShop{}}
 
   """
-  def change_integration(%Integration{} = integration, attrs \\ %{}) do
-    Integration.changeset(integration, attrs)
+  def change_integration(%ShopifyShop{} = integration, attrs \\ %{}) do
+    ShopifyShop.changeset(integration, attrs)
   end
 
   @spec bulk_insert_resource(

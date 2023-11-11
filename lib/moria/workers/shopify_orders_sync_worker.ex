@@ -3,7 +3,7 @@ defmodule Moria.Workers.ShopifyOrdersSyncWorker do
 
   alias Moria.Clients.Shopify
   alias Moria.Integrations
-  alias Moria.Integrations.ShopifyOrder
+  alias Moria.ShopifyShops.ShopifyOrder
   alias Moria.Shopify.Services.NextLinkExtractor
 
   @impl Oban.Worker
@@ -12,7 +12,7 @@ defmodule Moria.Workers.ShopifyOrdersSyncWorker do
   end
 
   def do_perform(%{"shop" => shop, "link" => link}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
     client = Shopify.client(integration)
 
     with {:ok, response} <- Shopify.orders(client, %{link: link}),
@@ -28,7 +28,7 @@ defmodule Moria.Workers.ShopifyOrdersSyncWorker do
 
   # The first run
   def do_perform(%{"shop" => shop, "since" => since}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
     client = Shopify.client(integration)
 
     with {:ok, response} <- Shopify.orders(client, %{since: since}),
@@ -48,7 +48,7 @@ defmodule Moria.Workers.ShopifyOrdersSyncWorker do
         :ok
 
       link ->
-        %{shop: shop, link: link}
+        %{shop: shop.url, link: link}
         |> new()
         |> Oban.insert()
     end

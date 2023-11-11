@@ -3,14 +3,15 @@ defmodule Moria.ShopifyShops.ShopifyShop do
   import Ecto.Changeset
 
   schema "shopify_shops" do
-    field :url, :string
-    field :access_token, :string
-    field :scope, :string
+    field(:url, :string)
+    field(:access_token, :string)
+    field(:scope, :string)
+    field(:last_synced, :datetime)
 
-    has_many :grants, Moria.ShopifyShops.ShopifyGrant, foreign_key: :shop_id
-    has_many :orders, Moria.ShopifyShops.ShopifyOrder, foreign_key: :shop_id
-    has_many :products, Moria.ShopifyShops.ShopifyProduct, foreign_key: :shop_id
-    has_many :customers, Moria.ShopifyShops.ShopifyCustomer, foreign_key: :shop_id
+    has_many(:grants, Moria.ShopifyShops.ShopifyGrant, foreign_key: :shop_id)
+    has_many(:orders, Moria.ShopifyShops.ShopifyOrder, foreign_key: :shop_id)
+    has_many(:products, Moria.ShopifyShops.ShopifyProduct, foreign_key: :shop_id)
+    has_many(:customers, Moria.ShopifyShops.ShopifyCustomer, foreign_key: :shop_id)
 
     timestamps()
   end
@@ -18,7 +19,7 @@ defmodule Moria.ShopifyShops.ShopifyShop do
   @doc false
   def changeset(shopify_shop, attrs) do
     shopify_shop
-    |> cast(attrs, [:url, :access_token, :scope])
+    |> cast(attrs, [:url, :access_token, :scope, :last_synced])
     |> validate_required([:url, :access_token, :scope])
   end
 end

@@ -6,9 +6,9 @@ defmodule Moria.Insights.Handlers.Brief do
   import Ecto.Query
 
   alias Moria.Insights.Brief
-  alias Moria.Integrations.ShopifyCustomer
-  alias Moria.Integrations.ShopifyOrder
-  alias Moria.Integrations.ShopifyProduct
+  alias Moria.ShopifyShops.ShopifyCustomer
+  alias Moria.ShopifyShops.ShopifyOrder
+  alias Moria.ShopifyShops.ShopifyProduct
   alias Moria.Repo
 
   @doc """
@@ -92,41 +92,41 @@ defmodule Moria.Insights.Handlers.Brief do
     end)
   end
 
-  defp get_last_week_orders(user) do
+  defp get_last_week_orders(shop_id) do
     %{start: start_of_week, end: end_of_week} = get_last_week_timings()
 
     query =
       from(orders in ShopifyOrder,
-        join: integration in assoc(orders, :integration),
-        where: integration.user_id == ^user.id,
+        join: shop in assoc(orders, :shop),
+        where: order.shop_id == ^shop_id,
         where: orders.processed_at <= ^end_of_week and orders.processed_at >= ^start_of_week
       )
 
     Repo.all(query)
   end
 
-  defp find_new_products(user) do
+  defp find_new_products(shop_id) do
     %{start: start_of_week, end: end_of_week} = get_last_week_timings()
 
     query =
       from(products in ShopifyProduct,
-        join: integration in assoc(products, :integration),
-        where: integration.user_id == ^user.id,
+        join: shop in assoc(products, :shop),
+        where: products.shop_id == ^user.id,
         where: products.published_at <= ^end_of_week and products.published_at >= ^start_of_week
       )
 
     Repo.all(query)
   end
 
-  defp find_top_customers_total_spend(user) do
+  defp find_top_customers_total_spend(shop_id) do
     %{start: start_of_week, end: end_of_week} = get_last_week_timings()
 
     query =
       from(customer in ShopifyCustomer,
-        join: integration in assoc(customer, :integration),
+        join: shop in assoc(customer, :shop),
         join: orders in assoc(customer, :shopify_orders),
         on: orders.shopify_customer_id == customer.shopify_id,
-        where: integration.user_id == ^user.id,
+        where: customer.shop_id == ^shop_id,
         where: orders.processed_at <= ^end_of_week and orders.processed_at >= ^start_of_week,
         group_by: customer.id,
         order_by: [desc: fragment("sum(?)", type(orders.total_price, :decimal))],

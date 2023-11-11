@@ -3,7 +3,7 @@ defmodule Moria.Workers.ShopifyProductsSyncWorker do
 
   alias Moria.Clients.Shopify
   alias Moria.Integrations
-  alias Moria.Integrations.ShopifyProduct
+  alias Moria.ShopifyShops.ShopifyProduct
   alias Moria.Shopify.Services.NextLinkExtractor
 
   @impl Oban.Worker
@@ -12,15 +12,15 @@ defmodule Moria.Workers.ShopifyProductsSyncWorker do
   end
 
   def do_perform(%{"shop" => shop, "link" => link}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
-    client = Shopify.client(integration)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
+    client = Shopify.client(shop)
 
     with {:ok, response} <- Shopify.products(client, %{link: link}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyProduct,
              response.body["products"],
-             integration.id
+             shop.id
            ) do
       maybe_enqueue_worker(shop, response.headers)
     end
@@ -28,15 +28,15 @@ defmodule Moria.Workers.ShopifyProductsSyncWorker do
 
   # The first run
   def do_perform(%{"shop" => shop, "since" => since}) do
-    {:ok, integration} = Integrations.get_by_shop(shop)
-    client = Shopify.client(integration)
+    shop = Shopifex.Shops.get_shop_by_url(shop)
+    client = Shopify.client(shop)
 
     with {:ok, response} <- Shopify.products(client, %{since: since}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyProduct,
              response.body["products"],
-             integration.id
+             shop.id
            ) do
       maybe_enqueue_worker(shop, response.headers)
     end
@@ -48,7 +48,7 @@ defmodule Moria.Workers.ShopifyProductsSyncWorker do
         :ok
 
       link ->
-        %{shop: shop, link: link}
+        %{shop: shop.url, link: link}
         |> new()
         |> Oban.insert()
     end
