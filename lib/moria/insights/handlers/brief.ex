@@ -6,6 +6,7 @@ defmodule Moria.Insights.Handlers.Brief do
   import Ecto.Query
 
   alias Moria.Insights.Brief
+  alias Moria.ShopifyShops.ShopifyShop
   alias Moria.ShopifyShops.ShopifyCustomer
   alias Moria.ShopifyShops.ShopifyOrder
   alias Moria.ShopifyShops.ShopifyProduct
@@ -17,11 +18,11 @@ defmodule Moria.Insights.Handlers.Brief do
   - New products added
   - Most ordered products
   """
-  @spec weekly_brief(User.t()) :: Brief.t()
-  def weekly_brief(user) do
-    with top_customers <- find_top_customers_total_spend(user),
-         new_products <- find_new_products(user),
-         high_interest_products <- find_high_interest_products(user),
+  @spec weekly_brief(ShopifyShop.t()) :: Brief.t()
+  def weekly_brief(shop) do
+    with top_customers <- find_top_customers_total_spend(shop.id),
+         new_products <- find_new_products(shop.id),
+         high_interest_products <- find_high_interest_products(shop.id),
          top_customer_report <- build_report(top_customers, new_products, high_interest_products) do
       {:ok, top_customer_report}
     end
@@ -70,8 +71,8 @@ defmodule Moria.Insights.Handlers.Brief do
     Map.put(result, :top_customers, report)
   end
 
-  defp find_high_interest_products(user) do
-    orders_last_week = get_last_week_orders(user)
+  defp find_high_interest_products(shop_id) do
+    orders_last_week = get_last_week_orders(shop_id)
 
     Enum.reduce(orders_last_week, %{max_quantity: 0}, fn order, acc ->
       if order.line_items do
@@ -98,7 +99,7 @@ defmodule Moria.Insights.Handlers.Brief do
     query =
       from(orders in ShopifyOrder,
         join: shop in assoc(orders, :shop),
-        where: order.shop_id == ^shop_id,
+        where: orders.shop_id == ^shop_id,
         where: orders.processed_at <= ^end_of_week and orders.processed_at >= ^start_of_week
       )
 
@@ -111,7 +112,7 @@ defmodule Moria.Insights.Handlers.Brief do
     query =
       from(products in ShopifyProduct,
         join: shop in assoc(products, :shop),
-        where: products.shop_id == ^user.id,
+        where: products.shop_id == ^shop_id,
         where: products.published_at <= ^end_of_week and products.published_at >= ^start_of_week
       )
 

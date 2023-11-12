@@ -8,7 +8,6 @@ defmodule Moria.EnqueueShopifySyncWorkers do
   """
 
   alias Moria.ShopifyShops.ShopifyShop
-  alias Moria.Shops
   alias Moria.Workers.ShopifyCustomersSyncWorker
   alias Moria.Workers.ShopifyProductsSyncWorker
 

@@ -6,7 +6,7 @@ defmodule Moria.ShopifyShops.ShopifyShop do
     field(:url, :string)
     field(:access_token, :string)
     field(:scope, :string)
-    field(:last_synced, :datetime)
+    field(:last_synced, :utc_datetime)
 
     has_many(:grants, Moria.ShopifyShops.ShopifyGrant, foreign_key: :shop_id)
     has_many(:orders, Moria.ShopifyShops.ShopifyOrder, foreign_key: :shop_id)

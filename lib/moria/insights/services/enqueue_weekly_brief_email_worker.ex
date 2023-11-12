@@ -12,20 +12,19 @@ defmodule Moria.Insights.Services.EnqueueWeeklyBriefEmailWorker do
 
   @impl Oban.Worker
   def perform(_) do
-    users = get_all_users_to_email()
+    shops = get_all_shops_to_email()
 
-    Logger.info("Enqueuing the weekly brief email for #{length(users)} users")
+    Logger.info("Enqueuing the weekly brief email for #{length(shops)} shops")
 
-    users
-    |> Enum.map(fn user -> SendWeeklyBriefEmailWorker.new(%{user_id: user.id}) end)
+    shops
+    |> Enum.map(fn shop -> SendWeeklyBriefEmailWorker.new(%{shop_url: shop.url}) end)
     |> Oban.insert_all()
 
     :ok
   end
 
-  # TODO: when we add companies with multiple users, we'll send this to the "owner"
-  defp get_all_users_to_email() do
-    from(users in Moria.Users.User, join: integration in assoc(users, :integration))
+  defp get_all_shops_to_email() do
+    from(shops in Moria.ShopifyShops.ShopifyShop)
     |> Repo.all()
   end
 end

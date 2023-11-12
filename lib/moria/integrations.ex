@@ -1,4 +1,4 @@
-defmodule Moria.ShopifyShops do
+defmodule Moria.Integrations do
   @moduledoc """
   The ShopifyShops context.
   """

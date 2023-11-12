@@ -14,32 +14,32 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
 
   def do_perform(%{"shop" => shop, "link" => link}) do
     shop = Shopifex.Shops.get_shop_by_url(shop)
-    client = Shopify.client(integration)
+    client = Shopify.client(shop)
 
     with {:ok, response} <- Shopify.customers(client, %{link: link}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyCustomer,
              response.body["customers"],
-             integration.id
+             shop.id
            ) do
-      maybe_enqueue_worker(shop, response.headers, integration.last_synced)
+      maybe_enqueue_worker(shop, response.headers, shop.last_synced)
     end
   end
 
   # The first run
   def do_perform(%{"shop" => shop, "since" => since}) do
     shop = Shopifex.Shops.get_shop_by_url(shop)
-    client = Shopify.client(integration)
+    client = Shopify.client(shop)
 
     with {:ok, response} <- Shopify.customers(client, %{since: since}),
          :ok <-
            Integrations.bulk_insert_resource(
              ShopifyCustomer,
              response.body["customers"],
-             integration.id
+             shop.id
            ) do
-      maybe_enqueue_worker(shop, response.headers, integration.last_synced)
+      maybe_enqueue_worker(shop, response.headers, shop.last_synced)
     end
   end
 

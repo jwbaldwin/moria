@@ -9,17 +9,3 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-
-Moria.Users.create(%{
-  email: "nolan@kept.com",
-  name: "Nolan Chase",
-  password: "password123",
-  password_confirmation: "password123"
-})
-
-Moria.Users.create(%{
-  email: "james@kept.com",
-  name: "James Baldwin",
-  password: "password123",
-  password_confirmation: "password123"
-})

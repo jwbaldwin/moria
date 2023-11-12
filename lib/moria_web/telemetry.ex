@@ -1,4 +1,4 @@
-defmodule RetentionWeb.Telemetry do
+defmodule MoriaWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 

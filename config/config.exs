@@ -8,14 +8,38 @@
 import Config
 
 config :moria,
-  ecto_repos: [Moria.Repo]
+  ecto_repos: [Moria.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :moria, MoriaWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [view: MoriaWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Moria.PubSub,
   live_view: [signing_salt: "tlg8TYXh"]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.17.11",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+# Configure tailwind (the version is required)
+config :tailwind,
+  version: "3.3.2",
+  default: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+    ),
+    cd: Path.expand("../assets", __DIR__)
+  ]
 
 # Oban configuration
 # 30 days before pruning
@@ -41,13 +65,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-config :moria, :pow,
-  user: Moria.Users.User,
-  repo: Moria.Repo,
-  extensions: [PowResetPassword, PowEmailConfirmation, PowPersistentSession],
-  controller_callbacks: Pow.Extension.Phoenix.ControllerCallbacks,
-  mailer_backend: MoriaWeb.Emails.Mailer
 
 config :shopifex,
   repo: Moria.Repo,

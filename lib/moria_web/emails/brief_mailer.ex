@@ -1,14 +1,13 @@
 defmodule MoriaWeb.Emails.BriefMailer do
   use Phoenix.Swoosh, view: MoriaWeb.EmailView, layout: {MoriaWeb.EmailView, :root}
 
-  alias Moria.Users.User
   alias Moria.Insights.Brief
 
-  @spec weekly_brief(User.t(), Brief.t()) :: :ok
-  def weekly_brief(user, brief) do
+  @spec weekly_brief(map(), Brief.t()) :: :ok
+  def weekly_brief(%{email: email, name: name}, brief) do
     new()
-    |> from("noreply@sample.test")
-    |> to({user.name, user.email})
+    |> from("noreply@gokept.com")
+    |> to({name, email})
     |> subject("Your weekly brief - Kept")
     |> render_body("weekly_brief.html",
       insights: build_insights_sentences_from_brief(brief),
