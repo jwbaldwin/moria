@@ -4,16 +4,17 @@ defmodule MoriaWeb.Router do
   require ShopifexWeb.Routes
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {MoriaWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, html: {MoriaWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+    plug(Shopifex.Plug.LoadInIframe)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   ShopifexWeb.Routes.pipelines()
@@ -27,21 +28,22 @@ defmodule MoriaWeb.Router do
   # Endpoints accessible within the Shopify admin panel iFrame.
   # Don't include this scope block if you are creating a SPA.
   scope "/", MoriaWeb do
-    pipe_through [:shopifex_browser, :shopify_session]
+    # pipe_through [:browser, :shopify_session]
+    pipe_through([:browser])
 
-    get "/", PageController, :home
+    get("/", PageController, :home)
   end
 
   # Make your webhook endpoint look like this
   scope "/webhook", MoriaWeb do
-    pipe_through [:shopify_webhook]
+    pipe_through([:shopify_webhook])
 
-    post "/", ShopifyWebhookController, :action
+    post("/", ShopifyWebhookController, :action)
   end
 
   # Place your admin link endpoints in here. TODO: create this controller
   scope "/admin-links", MoriaWeb do
-    pipe_through [:shopify_admin_link]
+    pipe_through([:shopify_admin_link])
 
     # get "/do-a-thing", ShopifyAdminLinkController, :do_a_thing
   end
@@ -57,10 +59,10 @@ defmodule MoriaWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through([:fetch_session, :protect_from_forgery])
 
-      live_dashboard "/dashboard", metrics: MoriaWeb.Telemetry
-      forward "/gallery", MoriaWeb.Emails.Gallery
+      live_dashboard("/dashboard", metrics: MoriaWeb.Telemetry)
+      forward("/gallery", MoriaWeb.Emails.Gallery)
     end
   end
 
@@ -70,9 +72,9 @@ defmodule MoriaWeb.Router do
   # node running the Phoenix server.
   if Mix.env() == :dev do
     scope "/dev" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through([:fetch_session, :protect_from_forgery])
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end
