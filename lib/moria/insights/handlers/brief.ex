@@ -7,10 +7,10 @@ defmodule Moria.Insights.Handlers.Brief do
 
   alias Moria.Insights.Brief
   alias Moria.Repo
-  alias Moria.ShopifyShops.ShopifyShop
   alias Moria.ShopifyShops.ShopifyCustomer
   alias Moria.ShopifyShops.ShopifyOrder
   alias Moria.ShopifyShops.ShopifyProduct
+  alias Moria.ShopifyShops.ShopifyShop
   alias Moria.Time
 
   @doc """
@@ -83,7 +83,7 @@ defmodule Moria.Insights.Handlers.Brief do
           acc = Map.update(acc, product_id, quantity, &(&1 + quantity))
 
           if Map.get(acc, product_id) > acc.max_quantity do
-            Map.put(acc, :max_quantity, quantity)
+            Map.put(acc, :max_quantity, Map.get(acc, product_id))
           else
             acc
           end

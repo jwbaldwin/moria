@@ -6,7 +6,10 @@
   >
     <div class="Polaris-Page-Header--noBreadcrumbs Polaris-Page-Header--mediumTitle">
       <h2 class="text-3xl pb-1 font-bold text-gray-900">Your briefing</h2>
-      <p class="text-base text-gray-700">Week of <span class="text-zinc-900 font-bold"><%= @range.start %></span> to <span class="text-zinc-900 font-bold" ><%= @range.end %></span></p>
+      <p class="text-base text-gray-700">
+        Week of <span class="text-zinc-900 font-bold"><%= @range.start %></span>
+        to <span class="text-zinc-900 font-bold"><%= @range.end %></span>
+      </p>
       <div class="px-4 sm:px-0">
         <div class="mt-2 flow-root">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -39,12 +42,19 @@
                       1.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      Your top 5 customers spent <span class="text-zinc-900 font-bold">$<%= @brief.top_customers.total_spent %></span> last week
+                      Your top 5 customers spent
+                      <span class="text-zinc-900 font-bold">
+                        <%= Money.to_string(Money.parse!(@brief.top_customers.total_spent, :USD)) %>
+                      </span>
+                      last week
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                      <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">
+                      <.link
+                        navigate={~p"/top-customers/#{@shop}"}
+                        class="rounded bg-gray-900 px-3 py-2 shadow text-white"
+                      >
                         View customers
-                      </button>
+                      </.link>
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
                       Send a personalized reward
@@ -56,15 +66,21 @@
                       2.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      <span class="text-zinc-900 font-bold"><%= length(@brief.new_products) %></span> new product(s) published to your Shopify site
+                      <span class="text-zinc-900 font-bold">
+                        <%= length(@brief.new_products) %>
+                      </span>
+                      new product(s) published to your Shopify site
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                      <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">
+                      <.link
+                        navigate={~p"/new-products/#{@shop}"}
+                        class="rounded bg-gray-900 px-3 py-2 shadow text-white"
+                      >
                         View products
-                      </button>
+                      </.link>
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      Consider a colleciton announcement email
+                      Consider a collection announcement email
                     </td>
                   </tr>
                   <tr>
@@ -72,12 +88,25 @@
                       1.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      Your top 5 customers spent <span class="text-zinc-900 font-bold">$<%= @brief.top_customers.total_spent %></span> last week
+                      <%= if length(@brief.high_interest_products.products) == 1 do %>
+                        Your top product this week was
+                        <span class="text-zinc-900 font-bold">
+                          <%= List.first(@brief.high_interest_products.products).title %>
+                        </span>
+                      <% else %>
+                        Your top products this week were ordered
+                        <span class="text-zinc-900 font-bold">
+                          <%= @brief.high_interest_products.quantity %> times
+                        </span>
+                      <% end %>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                      <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">
-                        View customers
-                      </button>
+                      <.link
+                        navigate={~p"/top-products/#{@shop}"}
+                        class="rounded bg-gray-900 px-3 py-2 shadow text-white"
+                      >
+                        View products
+                      </.link>
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
                       Send a personalized reward

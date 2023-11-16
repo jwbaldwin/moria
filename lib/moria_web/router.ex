@@ -39,6 +39,10 @@ defmodule MoriaWeb.Router do
       session: {MoriaWeb.ShopifyInfo, :session, []},
       on_mount: [{MoriaWeb.ShopifyInfo, :assign_shop}] do
       live("/", HomeLive.Index, :index)
+
+      live("/top-customers/:id", TopCustomersLive, :index)
+      live("/top-products/:id", TopProductsLive, :index)
+      live("/new-products/:id", NewProductsLive, :index)
     end
 
     # get("/", PageController, :home)

@@ -62,7 +62,8 @@ defmodule Moria.MixProject do
       {:timex, "~> 3.7.11"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:decimal, "~> 2.1.1"},
-      {:shopifex, "~> 2.1"}
+      {:shopifex, "~> 2.1"},
+      {:money, "~> 1.12"}
     ]
   end
 
