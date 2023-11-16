@@ -1,4 +1,4 @@
-defmodule Moria.EnqueueShopifySyncWorkers do
+defmodule Moria.Workers.EnqueueShopifySyncWorkers do
   @moduledoc """
   Insert workers to sync:
    - Customers
@@ -19,9 +19,12 @@ defmodule Moria.EnqueueShopifySyncWorkers do
       ShopifyProductsSyncWorker.new(params),
       ShopifyCustomersSyncWorker.new(params)
     ])
-    |> Ecto.Multi.update(
+    |> Ecto.Multi.run(
       :update_last_synced,
-      Shopifex.Shops.update_shop(shop, %{last_synced: Timex.now()})
+      fn _, _ ->
+        shop = Shopifex.Shops.update_shop(shop, %{last_synced: Timex.now()})
+        {:ok, shop}
+      end
     )
     |> Moria.Repo.transaction()
   end

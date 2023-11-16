@@ -6,11 +6,12 @@ defmodule Moria.Insights.Handlers.Brief do
   import Ecto.Query
 
   alias Moria.Insights.Brief
+  alias Moria.Repo
   alias Moria.ShopifyShops.ShopifyShop
   alias Moria.ShopifyShops.ShopifyCustomer
   alias Moria.ShopifyShops.ShopifyOrder
   alias Moria.ShopifyShops.ShopifyProduct
-  alias Moria.Repo
+  alias Moria.Time
 
   @doc """
   Returns the weekly brief containing the key insights for the week
@@ -94,7 +95,7 @@ defmodule Moria.Insights.Handlers.Brief do
   end
 
   defp get_last_week_orders(shop_id) do
-    %{start: start_of_week, end: end_of_week} = get_last_week_timings()
+    %{start: start_of_week, end: end_of_week} = Time.get_last_week_timings()
 
     query =
       from(orders in ShopifyOrder,
@@ -107,7 +108,7 @@ defmodule Moria.Insights.Handlers.Brief do
   end
 
   defp find_new_products(shop_id) do
-    %{start: start_of_week, end: end_of_week} = get_last_week_timings()
+    %{start: start_of_week, end: end_of_week} = Time.get_last_week_timings()
 
     query =
       from(products in ShopifyProduct,
@@ -120,7 +121,7 @@ defmodule Moria.Insights.Handlers.Brief do
   end
 
   defp find_top_customers_total_spend(shop_id) do
-    %{start: start_of_week, end: end_of_week} = get_last_week_timings()
+    %{start: start_of_week, end: end_of_week} = Time.get_last_week_timings()
 
     query =
       from(customer in ShopifyCustomer,
@@ -136,14 +137,5 @@ defmodule Moria.Insights.Handlers.Brief do
       )
 
     Repo.all(query)
-  end
-
-  defp get_last_week_timings() do
-    this_time_last_week = Timex.shift(Timex.now(), weeks: -1)
-
-    %{
-      start: Timex.beginning_of_week(this_time_last_week),
-      end: Timex.end_of_week(this_time_last_week)
-    }
   end
 end

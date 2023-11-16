@@ -1,6 +1,9 @@
 defmodule MoriaWeb.Router do
   use MoriaWeb, :router
 
+  import MoriaWeb.ShopifyInfo
+  import Shopifex.Plug, only: [put_shop_in_session: 2]
+
   require ShopifexWeb.Routes
 
   pipeline :browser do
@@ -11,6 +14,7 @@ defmodule MoriaWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(Shopifex.Plug.LoadInIframe)
+    plug(:put_shop_in_session)
   end
 
   pipeline :api do
@@ -28,10 +32,16 @@ defmodule MoriaWeb.Router do
   # Endpoints accessible within the Shopify admin panel iFrame.
   # Don't include this scope block if you are creating a SPA.
   scope "/", MoriaWeb do
-    # pipe_through [:browser, :shopify_session]
-    pipe_through([:browser])
+    pipe_through([:browser, :shopify_session])
+    # pipe_through([:browser])
 
-    get("/", PageController, :home)
+    live_session :default,
+      session: {MoriaWeb.ShopifyInfo, :session, []},
+      on_mount: [{MoriaWeb.ShopifyInfo, :assign_shop}] do
+      live("/", HomeLive.Index, :index)
+    end
+
+    # get("/", PageController, :home)
   end
 
   # Make your webhook endpoint look like this

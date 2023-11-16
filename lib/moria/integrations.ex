@@ -12,17 +12,17 @@ defmodule Moria.Integrations do
   alias Moria.ShopifyShops.ShopifyProduct
 
   @doc """
-  Gets a single integration.
+  Gets a single shop.
 
   Raises `Ecto.NoResultsError` if the ShopifyShop does not exist.
   """
-  def get_integration!(id) do
+  def get_shop!(id) do
     ShopifyShop
     |> Repo.get!(id)
   end
 
   @doc """
-  Gets a single integration by the shop name
+  Gets a single shop by the shop name
   """
   def get_by_url(url) do
     ShopifyShop
@@ -31,24 +31,24 @@ defmodule Moria.Integrations do
   end
 
   @doc """
-  Creates a integration.
+  Creates a shop.
 
   ## Examples
 
-      iex> create_integration(type, %{field: value})
+      iex> create_shop(type, %{field: value})
       {:ok, %ShopifyShop{}}
 
-      iex> create_integration(type, %{field: bad_value})
+      iex> create_shop(type, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_integration(attrs \\ %{}) do
+  def create_shop(attrs \\ %{}) do
     %ShopifyShop{}
     |> ShopifyShop.changeset(attrs)
     |> Repo.insert()
   end
 
-  def upsert_integration(attrs \\ %{}) do
+  def upsert_shop(attrs \\ %{}) do
     %ShopifyShop{}
     |> ShopifyShop.changeset(attrs)
     |> Repo.insert(
@@ -58,67 +58,67 @@ defmodule Moria.Integrations do
   end
 
   @doc """
-  Updates a integration.
+  Updates a shop.
 
   ## Examples
 
-      iex> update_integration(integration, %{field: new_value})
+      iex> update_shop(shop, %{field: new_value})
       {:ok, %ShopifyShop{}}
 
-      iex> update_integration(integration, %{field: bad_value})
+      iex> update_shop(shop, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_integration(%ShopifyShop{} = integration, attrs) do
-    integration
+  def update_shop(%ShopifyShop{} = shop, attrs) do
+    shop
     |> ShopifyShop.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a integration.
+  Deletes a shop.
 
   ## Examples
 
-      iex> delete_integration(integration)
+      iex> delete_shop(shop)
       {:ok, %ShopifyShop{}}
 
-      iex> delete_integration(integration)
+      iex> delete_shop(shop)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_integration(%ShopifyShop{} = integration) do
-    Repo.delete(integration)
+  def delete_shop(%ShopifyShop{} = shop) do
+    Repo.delete(shop)
   end
 
-  def delete_shopify_data(%ShopifyShop{} = integration) do
+  def delete_shopify_data(%ShopifyShop{} = shop) do
     Ecto.Multi.new()
     |> Ecto.Multi.delete_all(
       :delete_all_products,
-      from(sp in ShopifyProduct, where: sp.integration_id == ^integration.id)
+      from(sp in ShopifyProduct, where: sp.shop_id == ^shop.id)
     )
     |> Ecto.Multi.delete_all(
       :delete_all_customers,
-      from(sc in ShopifyCustomer, where: sc.integration_id == ^integration.id)
+      from(sc in ShopifyCustomer, where: sc.shop_id == ^shop.id)
     )
     |> Ecto.Multi.delete_all(
       :delete_all_orders,
-      from(so in ShopifyOrder, where: so.integration_id == ^integration.id)
+      from(so in ShopifyOrder, where: so.shop_id == ^shop.id)
     )
     |> Repo.transaction()
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking integration changes.
+  Returns an `%Ecto.Changeset{}` for tracking shop changes.
 
   ## Examples
 
-      iex> change_integration(integration)
+      iex> change_shop(shop)
       %Ecto.Changeset{data: %ShopifyShop{}}
 
   """
-  def change_integration(%ShopifyShop{} = integration, attrs \\ %{}) do
-    ShopifyShop.changeset(integration, attrs)
+  def change_shop(%ShopifyShop{} = shop, attrs \\ %{}) do
+    ShopifyShop.changeset(shop, attrs)
   end
 
   @spec bulk_insert_resource(
@@ -126,11 +126,11 @@ defmodule Moria.Integrations do
           List.t(),
           integer()
         ) :: :ok
-  def bulk_insert_resource(resource_type, list_of_resources, integration_id) do
+  def bulk_insert_resource(resource_type, list_of_resources, shop_id) do
     batch_size = get_batch_size(list_of_resources)
 
     list_of_resources
-    |> Enum.map(fn resource -> build_shopify_resource(resource_type, resource, integration_id) end)
+    |> Enum.map(fn resource -> build_shopify_resource(resource_type, resource, shop_id) end)
     |> Enum.chunk_every(batch_size)
     |> Task.async_stream(fn chunk_of_resources ->
       Moria.Repo.insert_all(resource_type, chunk_of_resources,
@@ -152,7 +152,7 @@ defmodule Moria.Integrations do
     div(@default, length(Map.keys(resource)))
   end
 
-  defp build_shopify_resource(ShopifyProduct, product, integration_id) do
+  defp build_shopify_resource(ShopifyProduct, product, shop_id) do
     now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
     %{
@@ -167,13 +167,13 @@ defmodule Moria.Integrations do
       product_type: product["product_type"],
       published_at: iso8601(product["published_at"]),
       vendor: product["vendor"],
-      integration_id: integration_id,
+      shop_id: shop_id,
       inserted_at: now,
       updated_at: now
     }
   end
 
-  defp build_shopify_resource(ShopifyCustomer, customer, integration_id) do
+  defp build_shopify_resource(ShopifyCustomer, customer, shop_id) do
     now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
     %{
@@ -188,13 +188,13 @@ defmodule Moria.Integrations do
       phone: customer["phone"],
       sms_marketing_consent: customer["sms_marketing_consent"],
       total_spent: Decimal.new(customer["total_spent"]),
-      integration_id: integration_id,
+      shop_id: shop_id,
       inserted_at: now,
       updated_at: now
     }
   end
 
-  defp build_shopify_resource(ShopifyOrder, order, integration_id) do
+  defp build_shopify_resource(ShopifyOrder, order, shop_id) do
     now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
     %{
@@ -210,7 +210,7 @@ defmodule Moria.Integrations do
       processed_at: iso8601(order["processed_at"]),
       source_url: order["source_url"],
       total_price: Decimal.new(order["total_price"]),
-      integration_id: integration_id,
+      shop_id: shop_id,
       inserted_at: now,
       updated_at: now
     }
@@ -223,23 +223,23 @@ defmodule Moria.Integrations do
     datetime
   end
 
-  def list_all_orders(integration_id) do
+  def list_all_orders(shop_id) do
     from(orders in ShopifyOrder,
-      where: orders.integration_id == ^integration_id
+      where: orders.shop_id == ^shop_id
     )
     |> Repo.all()
   end
 
-  def list_all_products(integration_id) do
+  def list_all_products(shop_id) do
     from(products in ShopifyProduct,
-      where: products.integration_id == ^integration_id
+      where: products.shop_id == ^shop_id
     )
     |> Repo.all()
   end
 
-  def list_all_customers(integration_id) do
+  def list_all_customers(shop_id) do
     from(customer in ShopifyCustomer,
-      where: customer.integration_id == ^integration_id
+      where: customer.shop_id == ^shop_id
     )
     |> Repo.all()
   end

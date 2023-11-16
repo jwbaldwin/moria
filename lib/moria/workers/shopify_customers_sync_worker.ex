@@ -3,7 +3,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
 
   alias Moria.Clients.Shopify
   alias Moria.Integrations
-  alias Moria.Integrations.ShopifyCustomer
+  alias Moria.ShopifyShops.ShopifyCustomer
   alias Moria.Shopify.Services.NextLinkExtractor
   alias Moria.Workers.ShopifyOrdersSyncWorker
 
@@ -47,7 +47,7 @@ defmodule Moria.Workers.ShopifyCustomersSyncWorker do
     case NextLinkExtractor.call(headers) do
       nil ->
         # All customers loaded, import orders and attach
-        Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop, since: since}))
+        Oban.insert(ShopifyOrdersSyncWorker.new(%{shop: shop.url, since: since}))
 
       link ->
         %{shop: shop.url, link: link}

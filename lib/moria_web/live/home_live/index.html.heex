@@ -6,7 +6,7 @@
   >
     <div class="Polaris-Page-Header--noBreadcrumbs Polaris-Page-Header--mediumTitle">
       <h2 class="text-3xl pb-1 font-bold text-gray-900">Your briefing</h2>
-      <p class="text-base text-gray-900">Week of {@today}</p>
+      <p class="text-base text-gray-700">Week of <span class="text-zinc-900 font-bold"><%= @range.start %></span> to <span class="text-zinc-900 font-bold" ><%= @range.end %></span></p>
       <div class="px-4 sm:px-0">
         <div class="mt-2 flow-root">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -39,7 +39,7 @@
                       1.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      Your top 5 customers spent $$brief.top_customers.total_spent last week
+                      Your top 5 customers spent <span class="text-zinc-900 font-bold">$<%= @brief.top_customers.total_spent %></span> last week
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">
@@ -56,7 +56,7 @@
                       2.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      $brief.new_products.length new $pluralize("product", brief.new_products.length) was published to your Shopify site`
+                      <span class="text-zinc-900 font-bold"><%= length(@brief.new_products) %></span> new product(s) published to your Shopify site
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">
@@ -72,7 +72,7 @@
                       1.
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900">
-                      Your top 5 customers spent $$brief.top_customers.total_spent last week
+                      Your top 5 customers spent <span class="text-zinc-900 font-bold">$<%= @brief.top_customers.total_spent %></span> last week
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <button class="rounded bg-gray-900 px-3 py-2 shadow text-white">

@@ -4,5 +4,4 @@ defmodule Moria.ShopifyPaymentGuard do
   @moduledoc """
   For available callbacks, see https://hexdocs.pm/shopifex/Shopifex.PaymentGuard.html
   """
-
 end
