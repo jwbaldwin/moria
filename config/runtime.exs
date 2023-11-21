@@ -48,7 +48,7 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "api.gokept.com"
+  host = System.get_env("PHX_HOST") || "app.gokept.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :moria, MoriaWeb.Endpoint,
@@ -72,11 +72,24 @@ if config_env() == :prod do
     api_client: Swoosh.ApiClient.Finch,
     finch_name: APIClient
 
-  # Configure CORS
-  config :cors_plug,
-    origin: ["https://gokept.com", "https://app.gokept.com"],
-    max_age: 86400,
-    methods: ["*"]
+  config :shopifex,
+    repo: Moria.Repo,
+    app_name: "Kept Retention",
+    web_module: MoriaWeb,
+    shop_schema: Moria.ShopifyShops.ShopifyShop,
+    plan_schema: Moria.ShopifyShops.ShopifyPlan,
+    grant_schema: Moria.ShopifyShops.ShopifyGrant,
+    payment_guard: Moria.ShopifyPaymentGuard,
+    redirect_uri: "https://app.gokept.com/auth/install",
+    reinstall_uri: "https://app.gokept.com/auth/update",
+    webhook_uri: "https://app.gokept.com/webhook",
+    payment_redirect_uri: "https://app.gokept.com/payment/complete",
+    scopes:
+      "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products",
+    api_key: System.get_env("SHOPIFY_API_KEY"),
+    secret: System.get_env("SHOPIFY_API_SECRET"),
+    # These are automatically subscribed on a store upon install
+    webhook_topics: ["app/uninstalled"]
 
   config :moria, Oban,
     plugins: [

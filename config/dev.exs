@@ -55,11 +55,23 @@ config :phoenix, :plug_init_mode, :runtime
 # Include HEEx debug annotations as HTML comments in rendered markup
 config :phoenix_live_view, :debug_heex_annotations, true
 
-# Configure CORS
-config :cors_plug,
-  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
-  max_age: 86400,
-  methods: ["*"]
+config :shopifex,
+  repo: Moria.Repo,
+  app_name: "Kept Retention",
+  web_module: MoriaWeb,
+  shop_schema: Moria.ShopifyShops.ShopifyShop,
+  plan_schema: Moria.ShopifyShops.ShopifyPlan,
+  grant_schema: Moria.ShopifyShops.ShopifyGrant,
+  payment_guard: Moria.ShopifyPaymentGuard,
+  redirect_uri: "https://5d3c-96-241-47-175.ngrok-free.app/auth/install",
+  reinstall_uri: "https://5d3c-96-241-47-175.ngrok-free.app/auth/update",
+  webhook_uri: "https://5d3c-96-241-47-175.ngrok-free.app/webhook",
+  payment_redirect_uri: "https://5d3c-96-241-47-175.ngrok-free.app/payment/complete",
+  scopes: "read_customers,read_reports,read_inventory,read_all_orders,read_orders,read_products",
+  api_key: System.get_env("SHOPIFY_API_KEY"),
+  secret: System.get_env("SHOPIFY_API_SECRET"),
+  # These are automatically subscribed on a store upon install
+  webhook_topics: ["app/uninstalled"]
 
 # CRON workers, configured to @hourly for testing
 config :moria, Oban,
