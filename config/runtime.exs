@@ -72,6 +72,7 @@ if config_env() == :prod do
     api_client: Swoosh.ApiClient.Finch,
     finch_name: APIClient
 
+  ## Configuring shopifex
   config :shopifex,
     repo: Moria.Repo,
     app_name: "Kept Retention",
