@@ -32,8 +32,13 @@ defmodule MoriaWeb.Router do
   # Endpoints accessible within the Shopify admin panel iFrame.
   # Don't include this scope block if you are creating a SPA.
   scope "/", MoriaWeb do
+    pipe_through([:browser])
+
+    get "/privacy", PolicyController, :privacy
+  end
+
+  scope "/", MoriaWeb do
     pipe_through([:browser, :shopify_session])
-    # pipe_through([:browser])
 
     live_session :default,
       session: {MoriaWeb.ShopifyInfo, :session, []},
