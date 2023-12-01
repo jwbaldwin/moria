@@ -6,7 +6,7 @@ defmodule MoriaWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :current_week, -1)}
+    {:ok, socket}
   end
 
   @impl true
