@@ -7,8 +7,89 @@
     <div class="Polaris-Page-Header--noBreadcrumbs Polaris-Page-Header--mediumTitle">
       <h2 class="text-3xl pb-1 font-bold text-gray-900">Your briefing</h2>
       <p class="text-base text-gray-700">
-        Week of <span class="text-zinc-900 font-bold"><%= @range.start %></span>
-        to <span class="text-zinc-900 font-bold"><%= @range.end %></span>
+        <div class="Polaris-Page-Header__PaginationWrapper">
+          <div class="Polaris-Box Polaris-Box--printHidden">
+            <nav aria-label="Pagination" class="Polaris-Pagination">
+              <div
+                class="Polaris-ButtonGroup Polaris-ButtonGroup--variantSegmented"
+                data-buttongroup-variant="segmented"
+              >
+                <div class="Polaris-ButtonGroup__Item">
+                  <button
+                    id="previousURL"
+                    class="Polaris-Button Polaris-Button--iconOnly"
+                    aria-label="Previous"
+                    phx-click="previous"
+                    type="button"
+                  >
+                    <span class="Polaris-Button__Content">
+                      <span class="Polaris-Button__Icon">
+                        <span class="Polaris-Icon">
+                          <span class="Polaris-Text--root Polaris-Text--visuallyHidden"></span>
+                          <svg
+                            viewBox="0 0 20 20"
+                            class="Polaris-Icon__Svg"
+                            focusable="false"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M11.78 5.47a.75.75 0 0 1 0 1.06l-3.47 3.47 3.47 3.47a.75.75 0 1 1-1.06 1.06l-4-4a.75.75 0 0 1 0-1.06l4-4a.75.75 0 0 1 1.06 0Z"
+                            >
+                            </path>
+                          </svg>
+                        </span>
+                      </span>
+                    </span>
+                  </button>
+                </div>
+                <div class="Polaris-ButtonGroup__Item">
+                  <button
+                    id="nextURL"
+                    class={[
+                      "Polaris-Button Polaris-Button--iconOnly !rounded-r-[0.5rem]",
+                      @current_week == -1 && "!cursor-not-allowed"
+                    ]}
+                    aria-label="Next"
+                    phx-click="next"
+                    disabled={@current_week == -1}
+                    type="button"
+                  >
+                    <span class="Polaris-Button__Content">
+                      <span class="Polaris-Button__Icon">
+                        <span class="Polaris-Icon">
+                          <span class="Polaris-Text--root Polaris-Text--visuallyHidden"></span>
+                          <svg
+                            viewBox="0 0 20 20"
+                            class="Polaris-Icon__Svg"
+                            focusable="false"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.72 14.53a.75.75 0 0 1 0-1.06l3.47-3.47-3.47-3.47a.75.75 0 0 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 0 1-1.06 0Z"
+                            >
+                            </path>
+                          </svg>
+                        </span>
+                      </span>
+                    </span>
+                  </button>
+                </div>
+                <p class="ml-2">
+                  Week of
+                  <span class="text-zinc-900 font-bold">
+                    <%= Timex.format!(@range.start, "{Mfull} {D}, {YYYY}") %>
+                  </span>
+                  to
+                  <span class="text-zinc-900 font-bold">
+                    <%= Timex.format!(@range.end, "{Mfull} {D}, {YYYY}") %>
+                  </span>
+                </p>
+              </div>
+            </nav>
+          </div>
+        </div>
       </p>
       <div class="px-4 sm:px-0">
         <div class="mt-2 flow-root">
@@ -50,7 +131,7 @@
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <.link
-                        navigate={~p"/top-customers/#{@shop}"}
+                        navigate={~p"/top-customers/#{@shop}?token=#{@token}&cw=#{@current_week}"}
                         class="rounded bg-gray-900 px-3 py-2 shadow text-white"
                       >
                         View customers
@@ -73,7 +154,7 @@
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <.link
-                        navigate={~p"/new-products/#{@shop}"}
+                        navigate={~p"/new-products/#{@shop}?token=#{@token}&cw=#{@current_week}"}
                         class="rounded bg-gray-900 px-3 py-2 shadow text-white"
                       >
                         View products
@@ -102,7 +183,7 @@
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                       <.link
-                        navigate={~p"/top-products/#{@shop}"}
+                        navigate={~p"/top-products/#{@shop}?token=#{@token}&cw=#{@current_week}"}
                         class="rounded bg-gray-900 px-3 py-2 shadow text-white"
                       >
                         View products

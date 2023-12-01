@@ -2,6 +2,7 @@ defmodule MoriaWeb.TopCustomersLive do
   use MoriaWeb, :live_view
 
   alias Moria.Insights.Handlers.Brief
+  alias Moria.Time
 
   @impl true
   def render(assigns) do
@@ -25,13 +26,17 @@ defmodule MoriaWeb.TopCustomersLive do
       </:col>
     </.table>
 
-    <.back navigate={~p"/"}>Back to brief</.back>
+    <.back navigate={~p"/?token=#{@token}&cw=#{@current_week}"}>Back to brief</.back>
     """
   end
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign_brief(socket)}
+  def mount(params, _session, socket) do
+    {:ok,
+     socket
+     |> assign(token: params["token"])
+     |> assign(current_week: String.to_integer(params["cw"]))
+     |> assign_brief()}
   end
 
   @impl true
@@ -40,7 +45,11 @@ defmodule MoriaWeb.TopCustomersLive do
   end
 
   defp assign_brief(socket) do
-    with {:ok, brief} <- Brief.weekly_brief(socket.assigns.shop) do
+    with {:ok, brief} <-
+           Brief.weekly_brief(
+             socket.assigns.shop,
+             Time.get_last_week_timings(socket.assigns.current_week)
+           ) do
       assign(socket, :customers, brief.top_customers.top_customers)
     end
   end

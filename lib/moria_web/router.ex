@@ -1,7 +1,6 @@
 defmodule MoriaWeb.Router do
   use MoriaWeb, :router
 
-  import MoriaWeb.ShopifyInfo
   import Shopifex.Plug, only: [put_shop_in_session: 2]
 
   require ShopifexWeb.Routes

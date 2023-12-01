@@ -8,6 +8,7 @@ defmodule Moria.Workers.SendWeeklyBriefEmailWorker do
 
   alias Moria.Clients.Shopify
   alias Moria.Insights.Handlers.Brief
+  alias Moria.Time
 
   require Logger
 
@@ -17,7 +18,7 @@ defmodule Moria.Workers.SendWeeklyBriefEmailWorker do
     with shop <- Shopifex.Shops.get_shop_by_url(shop_url),
          client <- Shopify.client(shop),
          {:ok, owner} <- Shopify.shop_info(client),
-         {:ok, brief} <- Brief.weekly_brief(shop),
+         {:ok, brief} <- Brief.weekly_brief(shop, Time.get_last_week_timings()),
          email <- MoriaWeb.Emails.BriefMailer.weekly_brief(owner, brief),
          {:ok, _} <- Moria.Mailer.deliver(email) do
       Logger.info("Weekly brief sent to shop #{shop_url} with email #{}")
