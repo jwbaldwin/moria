@@ -37,6 +37,14 @@ defmodule MoriaWeb.HomeLive.Index do
      push_patch(socket, to: "/?token=#{socket.assigns.token}&cw=#{current_week}", replace: true)}
   end
 
+  @impl true
+  def handle_event("sync", _unsigned_params, socket) do
+    Moria.Workers.EnqueueShopifySyncWorkers.call(socket.assigns.shop)
+
+    {:noreply,
+     put_flash(socket, :info, "Syncing shop data for #{translate_url(socket.assigns.shop.url)}")}
+  end
+
   defp assign_range(socket) do
     assign(socket, :range, Time.get_last_week_timings(socket.assigns.current_week))
   end
@@ -45,5 +53,16 @@ defmodule MoriaWeb.HomeLive.Index do
     with {:ok, brief} <- Brief.weekly_brief(socket.assigns.shop, socket.assigns.range) do
       assign(socket, :brief, brief)
     end
+  end
+
+  @doc """
+  Turns a shopify url into a shop name
+  """
+  def translate_url(shop_url) do
+    shop_url
+    |> String.split(".")
+    |> List.first()
+    |> String.split("-")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 end

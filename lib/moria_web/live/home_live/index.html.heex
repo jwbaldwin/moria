@@ -5,7 +5,20 @@
     style="--pc-box-padding-block-end-xs:var(--p-space-400);--pc-box-padding-block-end-md:var(--p-space-600);--pc-box-padding-block-start-xs:var(--p-space-400);--pc-box-padding-block-start-md:var(--p-space-600);--pc-box-padding-inline-start-xs:var(--p-space-400);--pc-box-padding-inline-start-sm:var(--p-space-0);--pc-box-padding-inline-end-xs:var(--p-space-400);--pc-box-padding-inline-end-sm:var(--p-space-0);position:relative"
   >
     <div class="Polaris-Page-Header--noBreadcrumbs Polaris-Page-Header--mediumTitle">
-      <h2 class="text-3xl pb-1 font-bold text-gray-900">Your briefing</h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-3xl pb-1 font-bold text-gray-900">Your briefing</h2>
+        <p class="rounded-full px-2 font-medium leading-6">
+          <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+            <span class="font-normal text-xs mr-1">last synced</span>
+            <span class="text-xs">
+              <%= Timex.format!(@shop.last_synced, "{Mshort} {D}, {YYYY}") %>
+            </span>
+            <button phx-click="sync" class="hover:text-green-900">
+              <.icon name="hero-arrow-path" class="ml-1 w-4 h-4" />
+            </button>
+          </span>
+        </p>
+      </div>
       <p class="text-base text-gray-700">
         <div class="Polaris-Page-Header__PaginationWrapper">
           <div class="Polaris-Box Polaris-Box--printHidden">
